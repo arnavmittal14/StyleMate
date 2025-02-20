@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "./Home.css";
-import tshirtImg from "../images/tshirt.jpeg";
-import jeansImg from "../images/jeans.jpeg";
-import sneakersImg from "../images/shoes.jpeg";
+import tshirtImg from "../assets/tshirt.jpeg";
+import jeansImg from "../assets/jeans.jpeg";
+import sneakersImg from "../assets/shoes.jpeg";
 const Home = () => {
   const [occasion, setOccasion] = useState("");
   const [generatedOutfit, setGeneratedOutfit] = useState(null);

@@ -114,7 +114,7 @@
   }
   
   .favorite-btn, .generate-btn {
-    background: #f472b6;
+    background: #f66a8f;
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
@@ -124,7 +124,7 @@
   }
   
   .generate-btn {
-    background: #4ade80;
+    background: #65f14f;
   }
   
   /* Footer */
