@@ -9,13 +9,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/Home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/closet" element={<Closet />} />
         <Route path="/favorites" element={<Favorites />} />
       </Routes>
     </Router>
   );
-}
+} 
 
 export default App;
