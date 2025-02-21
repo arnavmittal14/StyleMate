@@ -8,7 +8,7 @@ const Profile = () => {
       <nav className="navbar">
         <div className="logo">👕 StyleMate</div>
         <ul className="nav-links">
-          <li><a href="/Home">Home</a></li>
+          <li><a href="/">Home</a></li>
           <li><a href="/closet">Closet</a></li>
           <li><a href="/favorites">Favourites</a></li>
           <li><a href="/profile" className="active">Profile</a></li>
