@@ -143,7 +143,6 @@ def add_saved_outfit(request):
     except User.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
     
-    # Optional clothing item IDs for each category
     def get_clothing_item(item_key):
         item_id = data.get(item_key)
         if item_id:
@@ -152,15 +151,35 @@ def add_saved_outfit(request):
             except ClothingItem.DoesNotExist:
                 return None
         return None
-    
+
     head_item = get_clothing_item('head_accessory_item_id')
     top_item = get_clothing_item('top_item_id')
     outer_item = get_clothing_item('outerwear_item_id')
     bottom_item = get_clothing_item('bottom_item_id')
     footwear_item = get_clothing_item('footwear_item_id')
     current_weather = data.get('current_weather')
+
+    # Check if an outfit set with the same combination already exists for this user.
+    # Note: Since some fields may be None, the filtering must handle that.
+    existing_outfit = OutfitSet.objects.filter(
+        user=user,
+        outfit_name=outfit_name,  # Include outfit name if desired in your uniqueness check.
+        head_accessory_item=head_item,
+        top_item=top_item,
+        outerwear_item=outer_item,
+        bottom_item=bottom_item,
+        footwear_item=footwear_item,
+        current_weather=current_weather
+    ).first()
     
-    # Create the OutfitSet record
+    if existing_outfit:
+        # Option: Return the existing outfit rather than creating a new one.
+        return JsonResponse({
+            'message': 'Duplicate outfit found',
+            'saved_outfit_id': existing_outfit.outfit_id  # or however you wish to reference it
+        }, status=200)
+    
+    # No duplicate found; create a new OutfitSet record
     outfit_set = OutfitSet.objects.create(
         user=user,
         outfit_name=outfit_name,
