@@ -92,8 +92,8 @@ def add_to_closet(request):
     brand = data.get('brand')
     image_url = data.get('image_url')
     
-    # Create the ClothingItem record
-    clothing_item = ClothingItem.objects.create(
+    # Use get_or_create for the ClothingItem record
+    clothing_item, item_created = ClothingItem.objects.get_or_create(
         item_name=item_name,
         description=description,
         subcategory_id=subcategory_id,
@@ -109,8 +109,8 @@ def add_to_closet(request):
     except User.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
     
-    # Create a Closet record linking the item to the user
-    closet_entry = Closet.objects.create(
+    # Use get_or_create for the Closet record linking the item to the user
+    closet_entry, closet_created = Closet.objects.get_or_create(
         user=user,
         item=clothing_item
     )
@@ -120,6 +120,7 @@ def add_to_closet(request):
         'closet_id': closet_entry.closet_id,
         'item_id': clothing_item.item_id
     }, status=201)
+
 
 @csrf_exempt
 def add_saved_outfit(request):
