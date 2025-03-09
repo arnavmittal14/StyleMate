@@ -23,7 +23,7 @@ const Home = () => {
       <nav className="navbar">
         <div className="logo">👕 StyleMate</div>
         <ul className="nav-links">
-          <li><a href="/Home" className="active">Home</a></li>
+          <li><a href="/" className="active">Home</a></li>
           <li><a href="/closet">Closet</a></li>
           <li><a href="/favorites">Favourites</a></li>
           <li><a href="/Profile">Profile</a></li>
