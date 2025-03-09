@@ -1,19 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./Home.css";
 import tshirtImg from "../assets/tshirt.jpeg";
 import jeansImg from "../assets/jeans.jpeg";
 import sneakersImg from "../assets/shoes.jpeg";
+
 const Home = () => {
   const [occasion, setOccasion] = useState("");
   const [generatedOutfit, setGeneratedOutfit] = useState(null);
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const apiKey = "ae9829f9cbfff48c103fcbae172e8c18"; 
+        const response = await axios.get(
+          `http://api.weatherstack.com/current?access_key=${apiKey}&query=Calgary`
+        );
+
+        if (response.data.success === false) {
+          throw new Error(response.data.error.info);
+        }
+
+        setWeather(response.data.current);
+      } catch (error) {
+        console.error("Error fetching weather data:", error.message);
+      }
+    };
+
+    fetchWeather();
+  }, []);
 
   const handleGenerate = () => {
-    // Mock outfit generation (replace with API call later)
     const outfit = [
       { name: "Casual White T-Shirt", description: "Perfect for layering or wearing alone", image: tshirtImg },
       { name: "Classic Blue Jeans", description: "Comfortable slim-fit denim", image: jeansImg },
-      { name: "White Sneakers", description: "Versatile and comfortable footwear", image: sneakersImg},
-    ]; 
+      { name: "White Sneakers", description: "Versatile and comfortable footwear", image: sneakersImg },
+    ];
     setGeneratedOutfit(outfit);
   };
 
@@ -42,11 +65,12 @@ const Home = () => {
           />
           <button onClick={handleGenerate}>Generate</button>
         </div>
-        <div className="weather-info">
-          <div>🌡️ Temperature: 22°C</div>
-          <div>☁️ Weather: Partly Cloudy</div>
-          <div>🌸 Season: Spring</div>
-        </div>
+        {weather && (
+          <div className="weather-info">
+            <div>🌡️ Temperature: {weather.temperature}°C</div>
+            <div>☁️ Weather: {weather.weather_descriptions[0]}</div>
+          </div>
+        )}
       </header>
 
       {/* Outfit Section */}
