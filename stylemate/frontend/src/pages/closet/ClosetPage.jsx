@@ -1,4 +1,5 @@
 import ClosetItem from "./ClosetItem";
+import "./ClosetPage.css";
 
 export default function ClosetPage() {
   const clothingItems = [
@@ -9,15 +10,15 @@ export default function ClosetPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="page-container">
 
       {/* Filters Section */}
-      <div className="flex justify-center space-x-4 mt-6">
+      <div className="filters-container">
         {["All Items", "Tops", "Bottoms", "Dresses", "Outerwear", "Shoes", "Accessories"].map((filter, index) => (
           <button
             key={index}
-            className={`px-4 py-2 rounded-full text-gray-700 border border-gray-300 hover:bg-purple-100 ${
-              filter === "Tops" ? "bg-purple-600 text-white" : ""
+            className={`filter-button ${
+              filter === "Tops" ? "filter-button-active" : ""
             }`}
           >
             {filter}
@@ -26,12 +27,12 @@ export default function ClosetPage() {
       </div>
 
       {/* Add New Item Button */}
-      <div className="flex justify-center mt-4">
-        <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">+ Add New Item</button>
+      <div className="add-button-container">
+        <button className="add-button">+ Add New Item</button>
       </div>
 
       {/* Closet Items Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-10 mt-6">
+      <div className="closet-grid">
         {clothingItems.map((item, index) => (
           <ClosetItem key={index} image={item.image} name={item.name} category={item.category} season={item.season} />
         ))}

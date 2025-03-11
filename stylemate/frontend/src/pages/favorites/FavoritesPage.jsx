@@ -1,5 +1,5 @@
-
 import FavoriteItem from "./FavoriteItem";
+import "./FavoritesPage.css";
 
 export default function FavoritesPage() {
   const favoriteOutfits = [
@@ -9,20 +9,20 @@ export default function FavoritesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="favorites-page">
       
 
       {/* Page Header */}
-      <div className="text-center mt-10">
-        <h2 className="text-3xl font-bold text-gray-800">My Favorite Outfits</h2>
-        <p className="text-gray-600 mt-2">Your personally curated collection of favorite outfits</p>
+      <div className="page-header">
+        <h2 className="page-title">My Favorite Outfits</h2>
+        <p className="page-description">Your personally curated collection of favorite outfits</p>
       </div>
 
       {/* Favorites Carousel */}
-      <div className="relative flex items-center justify-center mt-8">
-        <button className="absolute left-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-200">⬅️</button>
+      <div className="carousel-container">
+        <button className="carousel-button carousel-button-left">⬅️</button>
 
-        <div className="flex space-x-6 overflow-x-auto px-6 py-4">
+        <div className="carousel-items">
           {favoriteOutfits.map((outfit, index) => (
             <FavoriteItem 
               key={index} 
@@ -34,13 +34,13 @@ export default function FavoritesPage() {
           ))}
         </div>
 
-        <button className="absolute right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-200">➡️</button>
+        <button className="carousel-button carousel-button-right">➡️</button>
       </div>
 
       {/* Pagination Dots */}
-      <div className="flex justify-center mt-4 space-x-2">
+      <div className="pagination-dots">
         {favoriteOutfits.map((_, index) => (
-          <div key={index} className="w-3 h-3 bg-gray-400 rounded-full"></div>
+          <div key={index} className="pagination-dot"></div>
         ))}
       </div>
     </div>
