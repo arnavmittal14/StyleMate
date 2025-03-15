@@ -25,7 +25,7 @@ def generate_outfit(request):
 
     # Prepare Gemini input
     prompt = f"""
-    You are a fashion assistant. Given the following clothing items, suggest a stylish outfit:
+    You are a fashion assistant. Given the images of the following clothing items, suggest a stylish outfit:
     {', '.join(labels)}
     """
 
