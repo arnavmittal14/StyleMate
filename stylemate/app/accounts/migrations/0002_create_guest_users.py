@@ -17,6 +17,13 @@ def create_guest_users(apps, schema_editor):
             "email": "guest_female@example.com",
             "password": "guestpassword",
             "gender": "female",
+        },
+        {
+            "first_name": "GuestMixed",
+            "last_name": "User",
+            "email": "guest_mixed@example.com",
+            "password": "guestpassword",
+            "gender": "other",
         }
     ]
     for guest in guests:

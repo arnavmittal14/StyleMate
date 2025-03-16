@@ -430,6 +430,9 @@ def guest_login(request):
     elif gender.lower() == 'female':
         guest_email = "guest_female@example.com"
         guest_password = "guestpassword"
+    elif gender.lower() == 'other':
+        guest_email = "guest_mixed@example.com"
+        guest_password = "guestpassword"
 
     user = authenticate(email=guest_email, password=guest_password)
     if user is not None:
