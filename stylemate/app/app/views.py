@@ -393,19 +393,20 @@ def upload_and_process_photo(request):
 
 @csrf_exempt
 def current_user(request):
-    if request.user.is_authenticated:
-        user = request.user
-        data = {
-            'user_id': user.user_id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'gender': user.gender,
-            'profile_photo_url': user.profile_photo_url or "/profile.png",
-        }
-        return JsonResponse({'user': data})
-    else:
+    if not request.user.is_authenticated:
         return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    user = request.user
+    data = {
+        'user_id': user.user_id,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'gender': user.gender,
+        'profile_photo_url': user.profile_photo_url or "/profile.png",
+    }
+    return JsonResponse({'user': data})
+
 
 @csrf_exempt
 def guest_login(request):
