@@ -35,6 +35,7 @@ CREATE TABLE Users (
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    profile_photo_url VARCHAR(255),
     gender ENUM('male', 'female', 'non-binary', 'other') NOT NULL,
     gender_other VARCHAR(50) DEFAULT NULL,
     last_login DATETIME NULL,
