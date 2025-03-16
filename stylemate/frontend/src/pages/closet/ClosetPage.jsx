@@ -1,25 +1,95 @@
-import ClosetItem from "./ClosetItem";
+// import { useState } from "react";
+// import "./ClosetPage.css";
+
+// export default function ClosetPage() {
+//   const allClothingItems = [
+//     { image: "/defaultcloset/whitetee.png", name: "White Tee", category: "Tops" },
+//     { image: "/defaultcloset/blacktee.png", name: "Black Tee", category: "Tops" },
+//     { image: "/defaultcloset/bluejeans.png", name: "Blue Jeans", category: "Bottoms" },
+//     { image: "/defaultcloset/blackjeans.png", name: "Black Jeans", category: "Bottoms" },
+//     { image: "/defaultcloset/greyhoodie.png", name: "Grey Hoodie", category: "Outerwear" },
+//     { image: "/defaultcloset/whitesneakers.png", name: "White Sneakers", category: "Footwear" },
+//   ];
+
+//   const [selectedCategory, setSelectedCategory] = useState("All Items");
+
+//   // Filter clothing items based on the selected category
+//   const filteredItems =
+//     selectedCategory === "All Items"
+//       ? allClothingItems
+//       : allClothingItems.filter((item) => item.category === selectedCategory);
+
+//   return (
+//     <div className="closet-container">
+//       {/* Filters Section */}
+//       <div className="filters-container">
+//         {["All Items", "Tops", "Bottoms", "Footwear", "Outerwear"].map((filter, index) => (
+//           <button
+//             key={index}
+//             className={`filter-button ${filter === selectedCategory ? "filter-button-active" : ""}`}
+//             onClick={() => setSelectedCategory(filter)}
+//           >
+//             {filter}
+//           </button>
+//         ))}
+//       </div>
+
+//       {/* Add New Item Button */}
+//       <div className="add-button-container">
+//         <button className="add-button">+ Add New Item</button>
+//       </div>
+
+//       {/* Closet Items Grid */}
+//       <div className="closet-grid">
+//         {filteredItems.map((item, index) => (
+//           <div key={index} className="closet-item">
+//             <img src={item.image} alt={item.name} className="item-image" />
+//             <p className="item-name">{item.name}</p>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+import { useState } from "react";
 import "./ClosetPage.css";
+import NewItemModal from "./NewItemModal";
 
 export default function ClosetPage() {
-  const clothingItems = [
-    { image: "/white-tee.jpg", name: "White Basic Tee", category: "Casual", season: "Summer" },
-    { image: "/denim-jeans.jpg", name: "Blue Denim Jeans", category: "Casual", season: "All Seasons" },
-    { image: "/leather-jacket.jpg", name: "Leather Jacket", category: "Evening", season: "Fall" },
-    { image: "/floral-dress.jpg", name: "Floral Dress", category: "Casual", season: "Summer" },
+  const allClothingItems = [
+    { image: "/defaultcloset/whitetee.png", name: "White Tee", category: "Tops" },
+    { image: "/defaultcloset/blacktee.png", name: "Black Tee", category: "Tops" },
+    { image: "/defaultcloset/bluejeans.png", name: "Blue Jeans", category: "Bottoms" },
+    { image: "/defaultcloset/blackjeans.png", name: "Black Jeans", category: "Bottoms" },
+    { image: "/defaultcloset/greyhoodie.png", name: "Grey Hoodie", category: "Outerwear" },
+    { image: "/defaultcloset/whitesneakers.png", name: "White Sneakers", category: "Footwear" },
   ];
 
-  return (
-    <div className="page-container">
+  const [selectedCategory, setSelectedCategory] = useState("All Items");
+  const [clothingItems, setClothingItems] = useState(allClothingItems);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Filter clothing items based on the selected category
+  const filteredItems =
+    selectedCategory === "All Items"
+      ? clothingItems
+      : clothingItems.filter((item) => item.category === selectedCategory);
+
+  // Function to handle adding a new item
+  const handleAddItem = (newItem) => {
+    setClothingItems([...clothingItems, newItem]);
+  };
+
+  return (
+    <div className="closet-container">
       {/* Filters Section */}
       <div className="filters-container">
-        {["All Items", "Tops", "Bottoms", "Dresses", "Outerwear", "Shoes", "Accessories"].map((filter, index) => (
+        {["All Items", "Tops", "Bottoms", "Footwear", "Outerwear"].map((filter, index) => (
           <button
             key={index}
-            className={`filter-button ${
-              filter === "Tops" ? "filter-button-active" : ""
-            }`}
+            className={`filter-button ${filter === selectedCategory ? "filter-button-active" : ""}`}
+            onClick={() => setSelectedCategory(filter)}
           >
             {filter}
           </button>
@@ -28,15 +98,23 @@ export default function ClosetPage() {
 
       {/* Add New Item Button */}
       <div className="add-button-container">
-        <button className="add-button">+ Add New Item</button>
+        <button className="add-button" onClick={() => setIsModalOpen(true)}>
+          + Add New Item
+        </button>
       </div>
 
       {/* Closet Items Grid */}
       <div className="closet-grid">
-        {clothingItems.map((item, index) => (
-          <ClosetItem key={index} image={item.image} name={item.name} category={item.category} season={item.season} />
+        {filteredItems.map((item, index) => (
+          <div key={index} className="closet-item">
+            <img src={item.image} alt={item.name} className="item-image" />
+            <p className="item-name">{item.name}</p>
+          </div>
         ))}
       </div>
+
+      {/* New Item Modal */}
+      {isModalOpen && <NewItemModal onClose={() => setIsModalOpen(false)} onAddItem={handleAddItem} />}
     </div>
   );
 }
