@@ -21,7 +21,7 @@
 
   .nav-link {
     text-decoration: none;
-    color:#dcbfb2;
+    color:#ccafa3;
     font-size: 18px;
     font-weight: 180;
     position: relative;
@@ -38,7 +38,7 @@
     bottom: 0;
     width: 0;
     height: 2px;
-    background-color: #dcbfb2; 
+    background-color: #ccafa3; 
     transition: width 0.3s ease-in-out;
   }
   
