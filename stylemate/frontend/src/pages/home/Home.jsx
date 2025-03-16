@@ -77,6 +77,7 @@ export default function Home() {
       {/* Outfit Generator */}
       <div className="generator-card">
         <h3 className="generator-title">Generate Your Outfit</h3>
+        <h6 className="generator-subtitle">keep it brief for optimal results!</h6>
         <div className="input-container">
           <input
             type="text"
