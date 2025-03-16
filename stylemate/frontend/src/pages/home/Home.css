@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
+
 /* Main container */
 .home-container {
     min-height: 100vh;
@@ -13,9 +16,10 @@
   }
   
   .main-heading {
-    font-size: 1.875rem; /* text-3xl */
-    font-weight: 700; /* font-bold */
-    color: #1f2937; /* text-gray-800 */
+    font-size: 2rem; /* text-3xl */
+    font-weight: 800; /* font-bold */
+    color: #646363; /* text-gray-800 */
+    font-family: "Dancing Script", cursive; /* Smoother cursive font */
   }
   
   .main-description {
@@ -36,7 +40,7 @@
   .generator-title {
     font-size: 1.125rem; /* text-lg */
     font-weight: 600; /* font-semibold */
-    color: #9333ea; /* text-purple-600 */
+    color: #ccafa3; /* text-purple-600 */
     text-align: center;
   }
   
@@ -60,25 +64,26 @@
   }
   
   .generate-button {
-    background-color: #9333ea; /* bg-purple-600 */
+    background-color: #dcbfb2; /* bg-purple-600 */
     color: white;
     padding: 0.5rem 1rem; /* px-4 py-2 */
     border-radius: 0.5rem; /* rounded-lg */
+    border: none; /* Removes any default border */
+    outline: none; /* Removes outline on focus */
   }
   
   .generate-button:hover {
-    background-color: #7e22ce; /* hover:bg-purple-700 */
+    background-color: #bba297;; /* hover:bg-purple-700 */
   }
   
   /* Weather display */
   .weather-card {
-    margin-top: 1.5rem; /* mt-6 */
-    background-image: linear-gradient(to right, #4ade80, #a855f7); /* bg-gradient-to-r from-green-400 to-purple-500 */
-    padding: 1rem; /* p-4 */
-    border-radius: 0.5rem; /* rounded-lg */
+    margin-top: 1.5rem; 
+    background-image: linear-gradient(to right, rgb(234, 217, 190),rgb(248, 225, 225)); 
+    padding: 1rem; 
+    border-radius: 0.5rem;
     color: white;
   }
-  
   .weather-location {
     font-size: 1.125rem; /* text-lg */
     font-weight: 600; /* font-semibold */
