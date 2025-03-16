@@ -44,11 +44,15 @@
   }
   
   .carousel-button-left {
-    left: 0.5rem; /* left-2 */
+    left: 0.5rem; 
+    width: 2rem; 
+    margin-left: 4rem; 
   }
   
   .carousel-button-right {
-    right: 0.5rem; /* right-2 */
+    right: 0.5rem; 
+    width: 2rem; 
+    margin-right: 4rem; 
   }
   
   /* Carousel items container */
