@@ -55,16 +55,17 @@
     padding: 0.5rem; /* p-2 */
     border: 1px solid #d1d5db; /* border border-gray-300 */
     border-radius: 0.5rem; /* rounded-lg */
+    color:  #4b5563;
   }
   
   .occasion-input:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #c084fc; /* focus:ring-2 focus:ring-purple-400 */
+    box-shadow: 0 0 0 2px  #ccafa3; /* focus:ring-2 focus:ring-purple-400 */
   }
   
   .generate-button {
     background-color: #dcbfb2; /* bg-purple-600 */
-    color: white;
+    color: #4b5563;
     padding: 0.5rem 1rem; /* px-4 py-2 */
     border-radius: 0.5rem; /* rounded-lg */
     border: none; /* Removes any default border */
