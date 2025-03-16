@@ -42,6 +42,13 @@
     color: #ccafa3; /* text-purple-600 */
     text-align: center;
   }
+
+  .generator-subtitle {
+    font-size: 0.9rem; /* text-lg */
+    font-weight: 600; /* font-semibold */
+    color: #ccafa3; 
+    text-align: center;
+  }
   
   /* Input section */
   .input-container {
