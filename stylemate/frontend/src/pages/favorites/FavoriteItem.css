@@ -1,74 +1,81 @@
-/* FavoriteItem container */
-.favorite-item {
-    background-color: white;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
-    border-radius: 1rem; /* rounded-2xl */
-    overflow: hidden;
-    width: 18rem; /* w-72 */
-  }
-  
-  /* Image container with relative positioning for the heart button */
-  .image-container {
+.favorite-item-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #17141d;
+    border-radius: 10px;
+    box-shadow: -1rem 0 3rem #000;
+    width: 240px;
+    margin: 20px;
+    transition: 0.4s ease-out;
     position: relative;
   }
   
-  /* Outfit image styling */
-  .outfit-image {
-    width: 100%;
-    height: 20rem; /* h-80 */
-    object-fit: cover;
+  .favorite-item-card:hover {
+    transform: translateY(-20px);
   }
   
-  /* Heart button styling */
-  .heart-button {
-    position: absolute;
-    top: 0.75rem; /* top-3 */
-    right: 0.75rem; /* right-3 */
-    color: #ef4444; /* text-red-500 */
-    font-size: 1.25rem; /* text-xl */
-    background: none;
-    border: none;
-    cursor: pointer;
+  .outfit-name {
+    color: white;
+    font-weight: 300;
+    font-size: 1.2rem;
+    margin-top: 10px;
   }
   
-  /* Item details container */
-  .item-details {
-    padding: 1rem; /* p-4 */
-  }
-  
-  /* Item name styling */
-  .item-name {
-    font-size: 1.125rem; /* text-lg */
-    font-weight: 600; /* font-semibold */
-    color: #1f2937; /* text-gray-800 */
-  }
-  
-  /* Item occasion styling */
-  .item-occasion {
-    font-size: 0.875rem; /* text-sm */
-    color: #6b7280; /* text-gray-500 */
-  }
-  
-  /* Item footer container */
-  .item-footer {
-    margin-top: 0.5rem; /* mt-2 */
+  .item-container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    color: #9333ea; /* text-purple-600 */
-    font-size: 0.875rem; /* text-sm */
+    margin-top: 10px;
   }
   
-  /* Temperature display */
-  .temperature {
-    display: inline-block;
+  .item-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+    background-color: #17141d;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    box-shadow: -1rem 0 3rem #000;
+    transition: 0.4s ease-out;
   }
   
-  /* Share button styling */
-  .share-button {
-    color: #10b981; /* text-green-500 */
-    font-size: 1.125rem; /* text-lg */
-    background: none;
-    border: none;
-    cursor: pointer;
+  .item-card:hover {
+    transform: translateY(-10px);
   }
+  
+  .item-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .item-details {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .item-name,
+  .item-occasion,
+  .item-temperature {
+    color: white;
+    font-size: 0.9rem;
+    margin: 5px 0;
+  }
+  
+  .item-name {
+    font-weight: bold;
+  }
+  
+  .item-card:hover .item-name,
+  .item-card:hover .item-occasion,
+  .item-card:hover .item-temperature {
+    color: #ff9a9e;
+  }
+  
