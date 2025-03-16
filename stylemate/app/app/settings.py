@@ -11,7 +11,21 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+<<<<<<< HEAD
 import os
+=======
+import google.generativeai as genai
+import os
+from dotenv import load_dotenv
+import pymysql
+pymysql.install_as_MySQLdb()
+
+load_dotenv()  # Load environment variables from .env file
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+genai.configure(api_key= GEMINI_API_KEY)
+
+>>>>>>> 5b395e5e68ed48db85498e89c91fcff27058c7ab
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -43,6 +57,7 @@ INSTALLED_APPS = [
     "accounts",
     "closet",
     "savedoutfit",
+    "ai_processor",
 ]
 
 MIDDLEWARE = [
@@ -85,8 +100,11 @@ DATABASES = {
         "NAME": "stylemate_database",
         "USER": "root",
         "PASSWORD": "new_password",
-        "HOST": "localhost",
+        "HOST": "127.0.0.1",  # Use 127.0.0.1 instead of localhost
         "PORT": "3306",
+        "OPTIONS": {
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
