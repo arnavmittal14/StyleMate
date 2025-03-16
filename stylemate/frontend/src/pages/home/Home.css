@@ -70,10 +70,12 @@
     border-radius: 0.5rem; /* rounded-lg */
     border: none; /* Removes any default border */
     outline: none; /* Removes outline on focus */
+    width: 25%;
+    height: 2.4rem;
   }
   
   .generate-button:hover {
-    background-color: #bba297;; /* hover:bg-purple-700 */
+    background-color: #bba297;/* hover:bg-purple-700 */
   }
   
   /* Weather display */
