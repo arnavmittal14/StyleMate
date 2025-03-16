@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "closet",
     "savedoutfit",
     "ai_processor",
+    "rest_framework"
 ]
 
 MIDDLEWARE = [

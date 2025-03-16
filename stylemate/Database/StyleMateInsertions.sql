@@ -1,10 +1,10 @@
 -- Sample Insertions
 
 -- 1. Insert sample Users
-INSERT INTO Users (username, email, password_hash, gender)
+INSERT INTO Users (first_name,last_name, email, password_hash, gender)
 VALUES 
-('Masculine Guest', 'guest@gmail.com', 'hashedpassword1','non-binary'),
-('Feminine Guest', 'guest@gmail.com', 'hashedpassword2','non-binary');
+('Masculine', 'Guest', 'guest_male@example.com', 'password1','male'),
+('Feminine' ,'Guest', 'guest_female@example.com', 'password2','female');
 
 -- 2. Insert sample ClothingItems (using existing Subcategory IDs from your earlier inserts)
 -- Head Accessories (Subcategories: Hat (1), Sunglasses (2))

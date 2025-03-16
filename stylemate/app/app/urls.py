@@ -19,5 +19,8 @@ urlpatterns = [
     path("api/get_users/", views.get_users, name="get_users"),
     path("api/upload_and_process_photo/", views.upload_and_process_photo, name="upload_and_process_photo"),
     path("api/ai/", include("ai_processor.urls")),
+    path("api/current_user/", views.current_user, name="current_user"),
+    path("api/guest_login/", views.guest_login, name="guest_login"),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
