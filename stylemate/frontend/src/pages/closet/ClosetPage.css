@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
+
+.closet-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+.filters-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-button {
+  background-color: #dfd0c9;
+  color: #4b5563;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.filter-button-active {
+  background-color: #d0bcb2;
+}
+
+.filter-button:hover {
+  background-color: #d0bcb2;
+}
+
+.add-button-container {
+  margin-bottom: 1rem;
+}
+
+.add-button {
+  background-color: #ccafa3;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.add-button:hover {
+  background-color: #bba297;
+}
+
+.closet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Prevents stretching */
+  gap: 1rem;
+  width: 100%;
+  max-width: 800px;
+  justify-content: center; /* Keeps items centered */
+}
+
+.closet-item {
+  width: 150px; /* Keeps items a fixed width */
+  height: 220px; /* Maintains a uniform height */
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.item-image {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  max-height: 80%;
+}
+
+.item-name {
+  margin-top: auto;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4b5563;
+  padding-bottom: 0.5rem;
+}
