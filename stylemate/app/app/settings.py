@@ -11,9 +11,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-<<<<<<< HEAD
-import os
-=======
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
@@ -25,7 +22,6 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 genai.configure(api_key= GEMINI_API_KEY)
 
->>>>>>> 5b395e5e68ed48db85498e89c91fcff27058c7ab
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
