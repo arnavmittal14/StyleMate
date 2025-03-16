@@ -4,7 +4,7 @@ import './Navbar.css';
 export default function Navbar() {
   return (
     <nav className="navbar">
-      <img src="/styleMate_logo.png" alt="StyleMate Logo" className="logo" />
+      <img src="/styleMate_logo_2.png" alt="StyleMate Logo" className="logo" />
       <nav className="nav-links">
         <a href="/" className="nav-link">Home</a>
         <a href="/Closet" className="nav-link">Closet</a>
