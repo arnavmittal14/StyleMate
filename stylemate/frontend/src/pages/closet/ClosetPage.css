@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
-
 .closet-container {
   display: flex;
   flex-direction: column;
@@ -51,16 +49,16 @@
 
 .closet-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Prevents stretching */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;
   width: 100%;
   max-width: 800px;
-  justify-content: center; /* Keeps items centered */
+  justify-content: center;
 }
 
 .closet-item {
-  width: 150px; /* Keeps items a fixed width */
-  height: 220px; /* Maintains a uniform height */
+  width: 150px;
+  height: 220px;
   background-color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
@@ -70,20 +68,68 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  overflow: hidden; /* Ensure the delete button stays within bounds */
 }
-
 
 .item-image {
   width: 100%;
   height: auto;
   border-radius: 0.5rem;
-  max-height: 80%;
+  max-height: 75%;
+  padding-top: 0.8rem;
 }
 
 .item-name {
+  font-size: 0.4rem;
+  font-weight: 200;
+  color: #52565c;
+  padding-bottom: 0.1rem;
   margin-top: auto;
+}
+
+
+/* Action buttons container for edit and delete */
+.action-buttons {
+  display: flex;
+  gap: 0.1rem; /* Reduce gap between the buttons */
+  position: absolute;
+  top: 8px;
+  right: 8px; /* Position the container at the top right corner */
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Show the action buttons when hovering over the closet item */
+.closet-item:hover .action-buttons {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Edit button style */
+.edit-button {
+  background: none;
+  border: none;
   font-size: 1rem;
-  font-weight: 600;
+  cursor: pointer;
   color: #4b5563;
-  padding-bottom: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.edit-button:hover {
+  transform: scale(1.2);
+}
+
+/* Delete button style */
+.delete-button {
+  background: none;
+  border: none;
+  font-size: 1rem; /* Increase size for consistency */
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+
+.delete-button:hover {
+  transform: scale(1.2); /* Hover effect for delete button */
 }
