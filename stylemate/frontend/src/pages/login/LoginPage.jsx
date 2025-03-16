@@ -95,13 +95,16 @@ export default function LoginPage() {
           // Popup for closet selection (replaces login card after guest login)
           <div className="popup-overlay">
             <div className="popup-card">
-              <h3>Choose Your Preferred Closet</h3>
+              <h3 >Choose Your Preferred Closet</h3>
               <div className="closet-selection">
                 <button onClick={() => handleClosetSelection("female")}>
                   Female Closet
                 </button>
                 <button onClick={() => handleClosetSelection("male")}>
                   Male Closet
+                </button>
+                <button onClick={() => handleClosetSelection("Mixed")}>
+                  Mixed Closet
                 </button>
               </div>
             </div>
