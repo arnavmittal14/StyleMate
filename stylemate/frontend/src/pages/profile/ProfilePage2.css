@@ -72,40 +72,6 @@ input:focus {
   border-bottom: 1px solid #ff9a9e;
 }
 
-.age-input {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  color: #646363;
-}
-
-.age-input button {
-  background-color: #dcbfb2;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  width: 35px;
-  height: 30px;
-  border-radius: 8px;
-  color: #646363;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-}
-
-.age-input input {
-  flex-grow: 1;
-  text-align: center;
-  border: 1px solid #ccc;
-  padding: 5px;
-  margin: 5px;
-  color: #646363;
-  width: 60%;
-  height: 25px;
-}
-
 select {
   width: 100%;
   padding: 5px;

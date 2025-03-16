@@ -191,16 +191,6 @@ export default function ProfileCard() {
         </div>
         <div className="info-row">
           <div>
-            <strong>Age</strong>
-            <div className="age-input">
-              <button onClick={() => setAge(age > 0 ? age - 1 : 0)}>-</button>
-              <input type="number" value={age} readOnly />
-              <button onClick={() => setAge(age + 1)}>+</button>
-            </div>
-          </div>
-        </div>
-        <div className="info-row">
-          <div>
             <strong>Email</strong>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
