@@ -37,12 +37,13 @@ def api_login(request):
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         
-        username = data.get('username')
+        # Use email (instead of username) for login.
+        email = data.get('email')
         password = data.get('password')
-        if not username or not password:
-            return JsonResponse({'error': 'Username and password are required'}, status=400)
+        if not email or not password:
+            return JsonResponse({'error': 'Email and password are required'}, status=400)
         
-        user = authenticate(username=username, password=password)
+        user = authenticate(email=email, password=password)
         if user is not None:
             auth_login(request, user)
             return JsonResponse({'message': 'Login successful'}, status=200)
@@ -59,24 +60,26 @@ def api_register(request):
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         
-        username = data.get('username')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
         email = data.get('email')
         password1 = data.get('password1')
         password2 = data.get('password2')
         profile_photo_url = data.get('profile_photo_url')  # Optional
-        gender = data.get('gender')  # Required now
+        gender = data.get('gender')  # Required
         gender_other = data.get('gender_other')
         
-        # Ensure required fields (including gender) are provided.
-        if not all([username, email, password1, password2, gender]):
-            return JsonResponse({'error': 'Username, email, password, and gender are required'}, status=400)
+        # Ensure required fields are provided.
+        if not all([first_name, last_name, email, password1, password2, gender]):
+            return JsonResponse({'error': 'First name, last name, email, password, and gender are required'}, status=400)
         
         if password1 != password2:
             return JsonResponse({'error': 'Passwords do not match'}, status=400)
         
         try:
             user = User.objects.create_user(
-                username=username,
+                first_name=first_name,
+                last_name=last_name,
                 email=email,
                 password=password1,
                 profile_photo_url=profile_photo_url,
@@ -332,7 +335,8 @@ def get_users(request):
     for user in users:
         data.append({
             'user_id': user.pk,
-            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
             'email': user.email,
             'profile_photo_url': user.profile_photo_url,
             'gender': user.gender,
@@ -386,3 +390,49 @@ def upload_and_process_photo(request):
         'message': 'Photo processed successfully',
         'processed_image_url': file_url
     })
+
+@csrf_exempt
+def current_user(request):
+    if request.user.is_authenticated:
+        user = request.user
+        data = {
+            'user_id': user.user_id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'gender': user.gender,
+            'profile_photo_url': user.profile_photo_url or "/profile.png",
+        }
+        return JsonResponse({'user': data})
+    else:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+@csrf_exempt
+def guest_login(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    
+    gender = data.get('gender')
+    if not gender:
+        return JsonResponse({'error': 'Gender is required'}, status=400)
+    
+    # Choose a guest account based on the provided gender.
+    # Adjust the email and password to match your guest accounts.
+    if gender.lower() == 'male':
+        guest_email = "guest_male@example.com"
+        guest_password = "guestpassword"
+    elif gender.lower() == 'female':
+        guest_email = "guest_female@example.com"
+        guest_password = "guestpassword"
+
+    user = authenticate(email=guest_email, password=guest_password)
+    if user is not None:
+        auth_login(request, user)
+        return JsonResponse({'message': 'Guest login successful', 'user_id': user.user_id})
+    else:
+        return JsonResponse({'error': 'Guest login failed'}, status=401)

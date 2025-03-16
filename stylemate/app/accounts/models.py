@@ -2,15 +2,16 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, email, password=None, **extra_fields):
-        if not username:
-            raise ValueError("The Username must be set")
+    def create_user(self, first_name, last_name, email, password=None, **extra_fields):
+        if not first_name:
+            raise ValueError("The first name must be set")
         if not email:
             raise ValueError("An email address is required")
         
         email = self.normalize_email(email)
         user = self.model(
-            username=username,
+            first_name=first_name,
+            last_name=last_name,
             email=email,
             **extra_fields
         )
@@ -18,7 +19,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, password=None, **extra_fields):
+    def create_superuser(self, first_name, last_name, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -27,24 +28,25 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
         
-        return self.create_user(username, email, password, **extra_fields)
+        return self.create_user(first_name, last_name, email, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     user_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=50, unique=True)
+    first_name = models.CharField(max_length=50, unique=True)
+    last_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=100, unique=True)
     # Maps the password field to the "password_hash" column in the database.
     password = models.CharField(max_length=255, db_column="password_hash")
     
-    # New profile photo field (optional)
+    # Optional profile photo field.
     profile_photo_url = models.CharField(max_length=255, null=True, blank=True)
     
-    # Standard Django fields for managing user status.
+    # Standard Django user status fields.
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    # Note: AbstractBaseUser already provides a last_login field.
-
-    # Gender fields with fixed choices.
+    # Note: AbstractBaseUser provides last_login.
+    
+    # Gender fields.
     GENDER_CHOICES = (
         ('male', 'Male'),
         ('female', 'Female'),
@@ -56,12 +58,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email','gender']
+    # Set USERNAME_FIELD to email for authentication.
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'gender']
 
     class Meta:
-        db_table = 'Users'  # Tells Django to use the existing "Users" table.
-        managed = False    # Prevents Django from altering the existing table structure.
+        db_table = 'Users'  # Uses the existing "Users" table.
+        managed = True    # Prevents Django from altering the existing table structure.
 
     def __str__(self):
-        return self.username
+        return self.email
+    
+    
