@@ -1,0 +1,112 @@
+/* Login page container */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Login card */
+  .login-card {
+    background-color: white;
+    padding: 2rem; /* p-8 */
+    border-radius: 1rem; /* rounded-2xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+    width: 24rem; /* w-96 */
+  }
+  
+  /* Title styling */
+  .login-title {
+    font-size: 1.875rem; /* text-3xl */
+    font-weight: 700; /* font-bold */
+    color: #9333ea; /* text-purple-600 */
+    text-align: center;
+  }
+  
+  .login-subtitle {
+    color: #6b7280; /* text-gray-500 */
+    text-align: center;
+    margin-top: 0.5rem; /* mt-2 */
+  }
+  
+  /* Form container */
+  .login-form {
+    margin-top: 1.5rem; /* mt-6 */
+  }
+  
+  /* Form labels */
+  .form-label {
+    color: #4b5563; /* text-gray-600 */
+    font-size: 0.875rem; /* text-sm */
+    display: block;
+  }
+  
+  .password-label {
+    margin-top: 1rem; /* mt-4 */
+  }
+  
+  /* Form inputs */
+  .form-input {
+    width: 100%;
+    padding: 0.5rem; /* p-2 */
+    margin-top: 0.25rem; /* mt-1 */
+    border: 1px solid #d1d5db; /* border border-gray-300 */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-sizing: border-box;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #c084fc; /* focus:ring-2 focus:ring-purple-400 */
+  }
+  
+  /* Forgot password link container */
+  .forgot-password-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem; /* mt-2 */
+  }
+  
+  /* Forgot password link */
+  .forgot-password-link {
+    font-size: 0.875rem; /* text-sm */
+    color: #9333ea; /* text-purple-600 */
+  }
+  
+  .forgot-password-link:hover {
+    text-decoration: underline; /* hover:underline */
+  }
+  
+  /* Login button */
+  .login-button {
+    width: 100%;
+    margin-top: 1.5rem; /* mt-6 */
+    background-color: #9333ea; /* bg-purple-600 */
+    color: white;
+    padding: 0.5rem 0; /* py-2 */
+    border-radius: 0.5rem; /* rounded-lg */
+    border: none;
+    cursor: pointer;
+  }
+  
+  .login-button:hover {
+    background-color: #7e22ce; /* hover:bg-purple-700 */
+  }
+  
+  /* Sign up text */
+  .signup-text {
+    font-size: 0.875rem; /* text-sm */
+    color: #6b7280; /* text-gray-500 */
+    text-align: center;
+    margin-top: 1rem; /* mt-4 */
+  }
+  
+  /* Sign up link */
+  .signup-link {
+    color: #9333ea; /* text-purple-600 */
+  }
+  
+  .signup-link:hover {
+    text-decoration: underline; /* hover:underline */
+  }

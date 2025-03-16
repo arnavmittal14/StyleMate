@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
+
+/* Main container */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Main content section */
+  .main-content {
+    text-align: center;
+    margin-top: 3rem; /* mt-12 */
+  }
+  
+  .main-heading {
+    font-size: 2rem; /* text-3xl */
+    font-weight: 800; /* font-bold */
+    color: #646363; /* text-gray-800 */
+    font-family: "Dancing Script", cursive; /* Smoother cursive font */
+  }
+  
+  .main-description {
+    color: #4b5563; /* text-gray-600 */
+    margin-top: 0.5rem; /* mt-2 */
+  }
+  
+  /* Outfit generator card */
+  .generator-card {
+    background-color: white;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+    border-radius: 1rem; /* rounded-2xl */
+    padding: 1.5rem; /* p-6 */
+    margin-top: 2rem; /* mt-8 */
+    width: 24rem; /* w-96 */
+  }
+  
+  .generator-title {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 600; /* font-semibold */
+    color: #ccafa3; /* text-purple-600 */
+    text-align: center;
+  }
+  
+  /* Input section */
+  .input-container {
+    margin-top: 1rem; /* mt-4 */
+    display: flex;
+    gap: 0.5rem; /* space-x-2 */
+  }
+  
+  .occasion-input {
+    flex: 1;
+    padding: 0.5rem; /* p-2 */
+    border: 1px solid #d1d5db; /* border border-gray-300 */
+    border-radius: 0.5rem; /* rounded-lg */
+    color:  #4b5563;
+  }
+  
+  .occasion-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px  #ccafa3; /* focus:ring-2 focus:ring-purple-400 */
+  }
+  
+  .generate-button {
+    background-color: #dcbfb2;
+    color: #4b5563;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    border-radius: 0.5rem; /* rounded-lg */
+    border: none; /* Removes any default border */
+    outline: none; /* Removes outline on focus */
+  }
+  
+  .generate-button:hover {
+    background-color: #bba297;; /* hover:bg-purple-700 */
+  }
+  
+  /* Weather display */
+  .weather-card {
+    margin-top: 1.5rem; 
+    background-image: linear-gradient(to right, rgb(234, 217, 190),rgb(248, 225, 225)); 
+    padding: 0.2rem; 
+    border-radius: 0.5rem;
+    color: rgb(122, 121, 121);
+  }
+  .weather-location {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 600; /* font-semibold */
+  }
+  
+  .weather-condition {
+    font-size: 0.875rem; /* text-sm */
+  }
+  
+  .weather-temp {
+    font-size: 1.875rem; /* text-3xl */
+    font-weight: 700; /* font-bold */
+  }
+  
+  .weather-feels-like {
+    font-size: 0.75rem; /* text-xs */
+  }
