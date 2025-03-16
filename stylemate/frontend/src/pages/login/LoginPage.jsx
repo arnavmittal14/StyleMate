@@ -21,10 +21,9 @@ export default function LoginPage() {
   };
 
   const handleSignUp = () => {
-    login({ email }); // Simulate sign-up by logging in with the email
-    navigate("/"); // Redirect to home page
+    navigate("/signup"); // Redirect to the signup page
   };
-
+  
   return (
     <div className="login-container">
       <div className="login-card">
