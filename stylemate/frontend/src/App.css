@@ -1,6 +1,11 @@
 .App {
   text-align: center;
+  background: linear-gradient(to bottom right, #ffe2e2,rgb(188, 222, 190));
+  min-height: 100vh; /* Full screen height */
+  width: 100vw; /* Full screen width */
+  font-family: Trebuchet MS, sans-serif;
 }
+
 
 .App-logo {
   height: 40vmin;

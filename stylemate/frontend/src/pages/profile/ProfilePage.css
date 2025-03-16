@@ -1,7 +1,6 @@
 /* General Page Styling */
 .profile-page {
     min-height: 100vh;
-    background-color: #f3f4f6;
     display: flex;
     justify-content: center;
     align-items: center;

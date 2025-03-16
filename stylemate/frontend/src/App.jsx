@@ -13,14 +13,16 @@ function Layout() {
 
   return (
     <div className="App">
-      {!hideNavbar && <Navbar />} {/* Show Navbar on all pages except login */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/closet" element={<Closet />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
+      <div className="ombre-background">
+        {!hideNavbar && <Navbar />} {/* Show Navbar on all pages except login */}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/closet" element={<Closet />} />
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </div>
     </div>
   );
 }
