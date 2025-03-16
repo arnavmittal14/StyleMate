@@ -148,7 +148,6 @@ import React, { useState } from "react";
 export default function ProfileCard() {
   const [firstName, setFirstName] = useState("First");
   const [lastName, setLastName] = useState("Last");
-  const [age, setAge] = useState(20);
   const [email, setEmail] = useState("info@example.com");
   const [password, setPassword] = useState("password");
   const [gender, setGender] = useState("Female");
@@ -164,7 +163,7 @@ export default function ProfileCard() {
   };
 
   const handleSave = () => {
-    alert(`Profile Saved!\n\nFirst Name: ${firstName}\nLast Name: ${lastName}\nAge: ${age}\nEmail: ${email}\nGender: ${gender}`);
+    alert(`Profile Saved!\n\nFirst Name: ${firstName}\nLast Name: ${lastName}\nEmail: ${email}\nGender: ${gender}`);
   };
 
   return (
