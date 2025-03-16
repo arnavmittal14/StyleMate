@@ -1,0 +1,127 @@
+.profile-card {
+  display: flex;
+  max-width: 600px;
+  max-height: 600px;
+  margin: 120px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: white;
+  color: #646363;
+}
+
+.profile-left {
+  background-image: linear-gradient(to bottom, rgb(234, 217, 190), rgb(248, 225, 225));
+  color: #646363;
+  padding: 20px;
+  text-align: center;
+  flex: 1;
+  align-items: center;
+}
+
+.profile-img {
+  width: 80px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  align-self: center;
+}
+
+.profile-name,
+.profile-role {
+  background: transparent;
+  border: none;
+  text-align: center;
+  font-size: 16px;
+  color: #646363;
+  width: 100%;
+  font-weight: bold;
+}
+
+.profile-name:focus,
+.profile-role:focus {
+  outline: none;
+}
+
+.profile-right {
+  padding: 20px;
+  flex: 2;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.info-row div {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  border: none;
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+  color: #646363;
+}
+
+input:focus {
+  outline: none;
+  border-bottom: 1px solid #ff9a9e;
+}
+
+.age-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  color: #646363;
+}
+
+.age-input button {
+  background-color: #dcbfb2;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  width: 35px;
+  height: 30px;
+  border-radius: 8px;
+  color: #646363;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.age-input input {
+  flex-grow: 1;
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 5px;
+  margin: 5px;
+  color: #646363;
+  width: 60%;
+  height: 25px;
+}
+
+select {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  margin-top: 10px;
+  color: #646363;
+}
+
+.save-button {
+  background: #dcbfb2;
+  color: white;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+}

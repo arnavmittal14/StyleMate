@@ -1,6 +1,5 @@
 /* General Page Styling */
 .profile-page {
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,6 +10,7 @@
     max-width: 500px;
     background: white;
     padding: 24px;
+    margin-top: 120px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 16px;
   }
@@ -19,13 +19,13 @@
   .profile-header {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: left;
   }
   
   .profile-title {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #333;
+    color: #646363;
     margin-top: 12px;
   }
   
@@ -46,14 +46,14 @@
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: 4px solid #9333ea;
+    border: 4px solid #ccafa3;
   }
   
   .profile-upload-btn {
     position: absolute;
     bottom: 0;
     right: 0;
-    background: #9333ea;
+    background: #ccafa3;
     padding: 8px;
     border-radius: 50%;
     border: none;
@@ -63,7 +63,7 @@
   }
   
   .profile-upload-btn:hover {
-    background: #7e22ce;
+    background: #ccafa3;
   }
   
   /* Form Styling */
@@ -86,6 +86,7 @@
     font-size: 0.875rem;
     color: #555;
     margin-bottom: 4px;
+    align-self: flex-start;
   }
   
   .form-group input {
@@ -97,8 +98,8 @@
   }
   
   .form-group input:focus {
-    border-color: #9333ea;
-    box-shadow: 0 0 4px rgba(147, 51, 234, 0.5);
+    border-color: #ccafa3;
+    box-shadow: 0 0 4px #ccafa3;
   }
   
   /* Gender Selection */
@@ -115,12 +116,12 @@
   .gender-button {
     flex: 1;
     padding: 10px;
-    border: 1px solid #9333ea;
+    border: 1px solid #ccafa3;
     border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
     background: transparent;
-    color: #9333ea;
+    color: #ccafa3;
     margin: 0 4px;
   }
   
@@ -129,7 +130,7 @@
   }
   
   .gender-button.selected {
-    background: #9333ea;
+    background: #ccafa3;
     color: white;
   }
   
@@ -141,7 +142,7 @@
   }
   
   .save-button {
-    background: #9333ea;
+    background: #dcbfb2;
     color: white;
     padding: 10px 24px;
     border: none;
@@ -151,6 +152,6 @@
   }
   
   .save-button:hover {
-    background: #7e22ce;
+    background: #bba297;
   }
   

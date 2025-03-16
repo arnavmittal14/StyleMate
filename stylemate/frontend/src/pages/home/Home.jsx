@@ -15,8 +15,8 @@ export default function Home() {
   
       // Function to fetch weather
       const fetchWeather = async (lat, lon) => {
-        const apiKey = "44cacdb47e2bd59c4100c6e2e4548626"; // Replace with your API key
-        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+        const apiKey = "44cacdb47e2bd59c4100c6e2e4548626";
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
   
         try {
           const response = await fetch(url);
@@ -24,8 +24,8 @@ export default function Home() {
           setWeather({
             city: data.name,
             condition: data.weather[0].description,
-            temp: `${Math.round(data.main.temp)}°F`,
-            feelsLike: `Feels like ${Math.round(data.main.feels_like)}°F`,
+            temp: `${Math.round(data.main.temp)}°C`,
+            feelsLike: `Feels like ${Math.round(data.main.feels_like)}°C`,
           });
         } catch (error) {
           console.error("Error fetching weather:", error);
@@ -49,7 +49,7 @@ export default function Home() {
         navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
   
         // Set a 5-second timeout to use Calgary as the default
-        timeoutId = setTimeout(errorCallback, 5000);
+        timeoutId = setTimeout(errorCallback, 3000);
       } else {
         errorCallback(); // If geolocation is not supported
       }
