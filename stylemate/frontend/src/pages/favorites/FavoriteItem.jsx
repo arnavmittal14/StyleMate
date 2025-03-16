@@ -1,7 +1,7 @@
 import React from "react";
 import "./FavoriteItem.css";  
 
-export default function FavoriteItem({ image, name, occasion, temperature }) {
+export default function FavoriteItem({ image, name, label }) {
   return (
     <div className="favorite-item">
       <div className="image-container">
@@ -10,10 +10,7 @@ export default function FavoriteItem({ image, name, occasion, temperature }) {
       </div>
       <div className="item-details">
         <h3 className="item-name">{name}</h3>
-        <p className="item-occasion">Perfect for: {occasion}</p>
         <div className="item-footer">
-          <span className="temperature">🌡 {temperature}</span>
-          <button className="share-button">🔗</button>
         </div>
       </div>
     </div>

@@ -118,3 +118,54 @@ button {
 .signup-button:hover {
   background: #bba297;
 }
+
+/* Popup Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Popup Card */
+.popup-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Popup Title */
+.popup-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* Closet Selection Buttons */
+.closet-selection button {
+  background: #dcbfb2;
+  color: white;
+  border: none;
+  padding: 10px 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 100%;
+}
+
+.closet-selection button:hover {
+  background: #bba297;
+}
