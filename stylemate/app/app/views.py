@@ -86,6 +86,7 @@ def api_register(request):
                 gender=gender,
                 gender_other=gender_other
             )
+            auth_login(request, user)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
         
@@ -98,11 +99,9 @@ def add_to_closet(request):
     content_type = request.content_type
 
     if content_type.startswith("multipart/form-data"):
-        # Use Django's built-in parsing for multipart form-data
         data = request.POST
         photo = request.FILES.get('photo')
     elif content_type.startswith("application/json"):
-        # Parse the JSON data directly from the body
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
@@ -117,14 +116,13 @@ def add_to_closet(request):
     if not item_name or not user_id:
         return JsonResponse({'error': 'Missing required fields: item_name and user_id'}, status=400)
     
-    description   = data.get('description')
+    description = data.get('description')
     category_id = data.get('category_id')
-    color         = data.get('color')
-    brand         = data.get('brand')
+    color = data.get('color')
+    brand = data.get('brand')
 
-    image_url = None
+    image_data = None  # This will store the processed binary image data
 
-    # If a file was uploaded, process it to remove the background
     if photo:
         # Validate file extension and MIME type
         if not photo.name.lower().endswith(('.jpg', '.jpeg', '.png')):
@@ -137,51 +135,48 @@ def add_to_closet(request):
         except Exception:
             return JsonResponse({'error': 'Invalid image file'}, status=400)
         
-        # Remove background using rembg
+        # Process image with rembg to remove background
         output_image = remove(input_image)
         
-        # Save output image as PNG in memory using BytesIO
+        # Convert processed image to PNG bytes
         output_io = BytesIO()
         output_image.save(output_io, format='PNG')
-        output_io.seek(0)
-        
-        # Use original file's base name with .png extension
-        base_name = os.path.splitext(photo.name)[0]
-        filename = f"{base_name}.png"
-        
-        # Save the processed image using FileSystemStorage
-        fs = FileSystemStorage()
-        file_path = fs.save(f"processed/{filename}", ContentFile(output_io.read()))
-        image_url = fs.url(file_path)
-    else:
-        # Otherwise, check for an image_url in the data
-        image_url = data.get('image_url')
-    
-    # Create or get the clothing item using the provided details and the processed image URL.
+        image_data = output_io.getvalue()  # binary data
+
+    # Create or update the clothing item with binary image data
     clothing_item, created = ClothingItem.objects.get_or_create(
         item_name=item_name,
         description=description,
         category_id=category_id,
         color=color,
         brand=brand,
-        image_url=image_url
+        defaults={'image_url': image_data}
     )
+    # If item already exists and an image was uploaded, update its image binary
+    if not created and image_data:
+        clothing_item.image_url = image_data
+        clothing_item.save()
     
-    # Get the user (ensure the user exists)
+    # Retrieve the user
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
     
-    # Link the clothing item with the user's closet.
-    closet_entry, created = Closet.objects.get_or_create(user=user, item=clothing_item)
+    # Link the clothing item to the user's closet
+    closet_entry, _ = Closet.objects.get_or_create(user=user, item=clothing_item)
+    
+    # Instead of returning the binary data, we return a URL to serve it.
+    image_url = f"http://localhost:8000/api/serve_clothing_item/{clothing_item.item_id}/"
     
     return JsonResponse({
         'message': 'Clothing item added to closet',
         'closet_id': closet_entry.closet_id,
         'item_id': clothing_item.item_id,
-        'image_url': clothing_item.image_url
+        'image_url': image_url
     }, status=201)
+
+
 
 @csrf_exempt
 def add_saved_outfit(request):
@@ -383,7 +378,7 @@ def upload_and_process_photo(request):
 
     # Store the bytes in the user's profile_photo_data field
     user = request.user
-    user.profile_photo_data = processed_bytes
+    user.profile_photo_url = processed_bytes
     user.save()
 
     return JsonResponse({
@@ -397,7 +392,7 @@ def current_user(request):
     
     user = request.user
     # If the user has binary data for the profile photo, construct a URL to serve it.
-    if hasattr(user, "profile_photo_data") and user.profile_photo_data:
+    if hasattr(user, "profile_photo_url") and user.profile_photo_url:
         photo_url = f"http://localhost:8000/api/profile_photo/{user.user_id}/"
     else:
         photo_url = "/profile.png"
@@ -452,10 +447,28 @@ def serve_profile_photo(request, user_id):
     except User.DoesNotExist:
         raise Http404("User not found")
     
-    if not hasattr(user, "profile_photo_data") or not user.profile_photo_data:
+    if not hasattr(user, "profile_photo_url") or not user.profile_photo_url:
         raise Http404("No profile photo")
     
-    return HttpResponse(user.profile_photo_data, content_type="image/png")
+    return HttpResponse(user.profile_photo_url, content_type="image/png")
+
+def serve_clothing_item(request, item_id):
+    try:
+        item = ClothingItem.objects.get(pk=item_id)
+    except ClothingItem.DoesNotExist:
+        raise Http404("Clothing item not found")
+    
+    if not item.image_url:
+        raise Http404("No image available")
+    
+    # Ensure the data is bytes (if it comes as memoryview, convert to bytes)
+    image_data = bytes(item.image_url)
+    
+    response = HttpResponse(image_data, content_type="image/png")
+    response["Content-Length"] = len(image_data)
+    return response
+
+
 
 @csrf_exempt
 def update_user(request):
@@ -504,7 +517,7 @@ def update_user(request):
         output_io = BytesIO()
         output_image.save(output_io, format='PNG')
         processed_bytes = output_io.getvalue()
-        user.profile_photo_data = processed_bytes
+        user.profile_photo_url = processed_bytes
 
     # Update user fields
     user.first_name = first_name

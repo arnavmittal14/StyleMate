@@ -23,6 +23,8 @@ urlpatterns = [
     path("api/guest_login/", views.guest_login, name="guest_login"),
     path("api/profile_photo/<int:user_id>/", views.serve_profile_photo, name="serve_profile_photo"),
     path("api/update_user/", views.update_user, name="update_user"),
+    path("api/serve_clothing_item/<int:item_id>/", views.serve_clothing_item, name="serve_clothing_item"),
+
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
