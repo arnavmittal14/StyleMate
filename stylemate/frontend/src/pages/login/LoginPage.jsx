@@ -193,10 +193,10 @@ export default function LoginPage() {
               <button onClick={() => setGuestGender("other")}>
                 Non-Binary Closet
               </button>
-            </div>
-            <div className="popup-actions">
-              <button onClick={confirmGuestLogin}>Confirm</button>
-              <button onClick={cancelGuestLogin}>Cancel</button>
+              <div className="conf-cancel">
+                <button onClick={confirmGuestLogin}>Confirm</button>
+                <button onClick={cancelGuestLogin}>Cancel</button>
+              </div>
             </div>
           </div>
         </div>
