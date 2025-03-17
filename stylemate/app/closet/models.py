@@ -14,7 +14,7 @@ class ClothingItem(models.Model):
     class Meta:
         db_table = 'ClothingItems'
         # If using native table, set managed = False
-        managed = False
+        managed = True
 
 class Closet(models.Model):
     closet_id = models.AutoField(primary_key=True)

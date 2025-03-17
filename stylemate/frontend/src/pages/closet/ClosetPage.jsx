@@ -12,6 +12,7 @@ export default function ClosetPage() {
   const [itemToEdit, setItemToEdit] = useState(null);
   const [error, setError] = useState("");
 
+  // Mapping from category_id to category name
   const categoryMapping = {
     1: "Head Accessory",
     2: "Tops",
@@ -19,6 +20,7 @@ export default function ClosetPage() {
     4: "Bottoms",
     5: "Footwear"
   };
+
   // Fetch closet items from the backend using the current user's id stored in localStorage
   const fetchClosetItems = () => {
     const userId = localStorage.getItem("user_id");
@@ -49,7 +51,7 @@ export default function ClosetPage() {
   }, []);
 
   // Called when a new item is added via the modal.
-  // This sends the item info along with the photo (if any) to the backend's add_to_closet endpoint.
+  // Sends item info along with an uploaded photo (if any) to the backend's add_to_closet endpoint.
   const handleAddItem = (newItem) => {
     setError("");
     const userId = localStorage.getItem("user_id");
@@ -58,7 +60,7 @@ export default function ClosetPage() {
       return;
     }
 
-    // Create FormData to support file upload and text fields.
+    // Create FormData for file upload and text fields.
     const formData = new FormData();
     formData.append("item_name", newItem.item_name);
     formData.append("description", newItem.description || "");
@@ -67,11 +69,10 @@ export default function ClosetPage() {
     formData.append("brand", newItem.brand || "");
     formData.append("user_id", userId);
 
-    // If an image file is provided from the modal, append it under key "photo"
+    // Append the image file (if provided)
     if (newItem.photo) {
       formData.append("photo", newItem.photo);
     } else if (newItem.image_url) {
-      // Alternatively, if an image URL is provided, pass that.
       formData.append("image_url", newItem.image_url);
     }
 
@@ -132,13 +133,11 @@ export default function ClosetPage() {
     <div className="closet-container">
       {/* Filters Section */}
       <div className="filters-container">
-        {["All Items", "Head Accessory","Tops", "Bottoms","Outerwear", "Footwear" ].map(
+        {["All Items", "Head Accessory", "Tops", "Bottoms", "Outerwear", "Footwear"].map(
           (filter, index) => (
             <button
               key={index}
-              className={`filter-button ${
-                filter === selectedCategory ? "filter-button-active" : ""
-              }`}
+              className={`filter-button ${filter === selectedCategory ? "filter-button-active" : ""}`}
               onClick={() => setSelectedCategory(filter)}
             >
               {filter}
@@ -158,20 +157,14 @@ export default function ClosetPage() {
       <div className="closet-grid">
         {filteredItems.map((item, index) => (
           <div key={index} className="closet-item">
-            <img
-              src={item.image_url}
-              alt={item.item_name}
-              className="items-image"
-            />
+            {/* Display the image using the URL returned from backend's serve endpoint */}
+            <img src={item.image_url} alt={item.item_name} className="items-image" />
             <p className="item-name">{item.item_name}</p>
             <div className="action-buttons">
               <button className="edit-button" onClick={() => openEditModal(index)}>
                 ✏️
               </button>
-              <button
-                className="delete-button"
-                onClick={() => openDeleteModal(index)}
-              >
+              <button className="delete-button" onClick={() => openDeleteModal(index)}>
                 🗑️
               </button>
             </div>
