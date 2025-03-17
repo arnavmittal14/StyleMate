@@ -152,13 +152,6 @@ button {
 }
 
 /* Closet Selection Buttons */
-.closet-selection {
-  display: flex;
-  flex-direction: column; /* Arrange buttons vertically */
-  align-items: center; /* Center the buttons horizontally */
-  justify-content: center; /* Center the buttons vertically */
-}
-
 .closet-selection button {
   background: #dcbfb2;
   color: white;
@@ -167,8 +160,10 @@ button {
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  margin: 10px 0; /* Adjusted margin for better spacing */
-  width: 90%; /* Limit the width of the buttons */
+  margin: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 100%;
 }
 
 .closet-selection button:hover {
