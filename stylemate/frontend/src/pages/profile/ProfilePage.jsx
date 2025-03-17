@@ -5,7 +5,7 @@ export default function ProfilePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [gender, setGender] = useState("Male");
+  const [gender, setGender] = useState("");
   const [profilePhotoFile, setProfilePhotoFile] = useState(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState("/profile.png");
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,7 @@ export default function ProfilePage() {
           setFirstName(data.user.first_name || "");
           setLastName(data.user.last_name || "");
           setEmail(data.user.email || "");
-          setGender(data.user.gender || "Male");
+          setGender(data.user.gender || "male");
           setProfilePhotoPreview(data.user.profile_photo_url || "/profile.png");
         } else if (data.error) {
           setError(data.error);
@@ -162,8 +162,8 @@ export default function ProfilePage() {
               onChange={(e) => setGender(e.target.value)}
               className="gender-dropdown"
             >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
               <option value="non-binary">Non-Binary</option>
               <option value="other">Other</option>
             </select>
