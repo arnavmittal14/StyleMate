@@ -21,12 +21,12 @@ CREATE TABLE ClothingItems (
     item_id INT AUTO_INCREMENT PRIMARY KEY,
     item_name VARCHAR(100) NOT NULL,
     description TEXT,
-    subcategory_id INT,
+    category_id INT,
     color VARCHAR(50),
     brand VARCHAR(100),
     image_url VARCHAR(255),  -- Image link for clothing item
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (subcategory_id) REFERENCES Subcategories(subcategory_id) ON DELETE SET NULL
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE SET NULL
 );
 
 -- Users Table (For Closet)

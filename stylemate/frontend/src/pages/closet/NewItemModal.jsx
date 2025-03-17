@@ -4,7 +4,7 @@ import "./NewItemModal.css";
 export default function NewItemModal({ onClose, onAddItem, initialItem }) {
   const [image, setImage] = useState(initialItem?.image || null);
   const [name, setName] = useState(initialItem?.name || "");
-  const [category, setCategory] = useState(initialItem?.category || "Tops");
+  const [categoryId, setCategoryId] = useState(initialItem?.category_id || "2");
 
   // Handle file upload
   const handleImageUpload = (event) => {
@@ -26,7 +26,7 @@ export default function NewItemModal({ onClose, onAddItem, initialItem }) {
       return;
     }
 
-    const newItem = { image, name, category };
+    const newItem = { image, item_name: name, category_id: categoryId };
     onAddItem(newItem);
     onClose();
   };
@@ -36,7 +36,7 @@ export default function NewItemModal({ onClose, onAddItem, initialItem }) {
     if (initialItem) {
       setImage(initialItem.image);
       setName(initialItem.name);
-      setCategory(initialItem.category);
+      setCategoryId(initialItem.categoryId);
     }
   }, [initialItem]);
 
@@ -59,11 +59,12 @@ export default function NewItemModal({ onClose, onAddItem, initialItem }) {
           />
 
           <label>Category:</label>
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="Tops">Tops</option>
-            <option value="Bottoms">Bottoms</option>
-            <option value="Footwear">Footwear</option>
-            <option value="Outerwear">Outerwear</option>
+          <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+            <option value="1">Head Accessory</option>
+            <option value="2">Tops</option>
+            <option value="3">Outerwear</option>
+            <option value="4">Bottoms</option>
+            <option value="5">Footwear</option>
           </select>
 
           <div className="modal-buttons">

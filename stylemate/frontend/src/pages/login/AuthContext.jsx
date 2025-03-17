@@ -20,11 +20,11 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // Login function
-  const login = (username) => {
-    const userData = { name: username };
+  // Login function: expects a user object with user_id, email, etc.
+  const login = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user_id", userData.user_id);
     localStorage.setItem("isAuthenticated", "true");
   };
 
@@ -32,6 +32,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("user_id");
     localStorage.removeItem("isAuthenticated");
   };
 
