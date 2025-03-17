@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
+
 /* Navbar container */
 .navbar {
     width: 100%;
@@ -10,16 +13,15 @@
     align-items: center;
     padding: 20px 80px;
     box-sizing: border-box; /* Ensure padding is included in width calculation */
-  }
-  
-  /* Logo styling */
-  .logo {
+}
+
+/* Logo styling */
+.logo {
     height: 90px; /* Adjust size as needed */
     width: auto;  /* Maintain aspect ratio */
-  }  
-  
+}  
 
-  .nav-link {
+.nav-link {
     text-decoration: none;
     color: #ccafa3;
     font-size: 18px;
@@ -28,10 +30,10 @@
     padding-bottom: 5px;
     padding-left: 15px;
     padding-right: 15px;
-  }
-  
-  /* Underline Animation */
-  .nav-link::after {
+}
+
+/* Underline Animation */
+.nav-link::after {
     content: "";
     position: absolute;
     left: 0;
@@ -40,20 +42,20 @@
     height: 2px;
     background-color: #ccafa3; 
     transition: width 0.3s ease-in-out;
-  }
-  
-  .nav-link:hover::after {
+}
+
+.nav-link:hover::after {
     width: 100%;
     gap: 40px;
-  }
-  
-  /* Ensure the body has no default margin */
-  body {
+}
+
+/* Ensure the body has no default margin */
+body {
     margin: 0;
     padding: 0;
-  }
+}
 
-  .logout-button {
+.logout-button {
     background-color: #dcbfb2;
     color: #4b5563;
     padding: 0.5rem 1rem; /* px-4 py-2 */
@@ -61,8 +63,45 @@
     border: none; /* Removes any default border */
     outline: none; /* Removes outline on focus */
     width: 100px;
-  }
-  
-  .logout-button:hover {
+}
+
+.logout-button:hover {
     background-color: #bba297;; /* hover:bg-purple-700 */
-  }
+}
+
+/* Responsive Design for Navbar */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 40px;
+        height: auto;
+        flex-direction: column;
+    }
+
+    .logo {
+        height: 70px;
+    }
+
+    .nav-link {
+        font-size: 16px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 10px 20px;
+    }
+
+    .logo {
+        height: 60px;
+    }
+
+    .nav-link {
+        font-size: 14px;
+    }
+
+    .logout-button {
+        width: 80px;
+        padding: 0.4rem 0.8rem;
+    }
+}
