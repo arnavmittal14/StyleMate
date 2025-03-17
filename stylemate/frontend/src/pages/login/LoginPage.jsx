@@ -33,8 +33,9 @@ export default function LoginPage() {
     // Store the user's preference in local storage or context
     localStorage.setItem("preferredCloset", closetType);
     navigate("/"); // Redirect to home page
-  };
 
+  };
+  
   return (
     <div className="login-container">
       {!isLoggedInAsGuest ? (
