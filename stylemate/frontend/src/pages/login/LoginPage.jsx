@@ -191,7 +191,7 @@ export default function LoginPage() {
                 Male Closet
               </button>
               <button onClick={() => setGuestGender("other")}>
-                Non-Binary Closet
+                Other
               </button>
             </div>
             <div className="popup-actions">
