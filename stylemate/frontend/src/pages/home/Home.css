@@ -88,7 +88,7 @@
   /* Weather display */
   .weather-card {
     margin-top: 1.5rem; 
-    background-image: linear-gradient(to right, rgb(234, 217, 190),rgb(248, 225, 225)); 
+    background-image: linear-gradient(to bottom, rgb(234, 217, 190),rgb(248, 225, 225)); 
     padding: 0.2rem; 
     border-radius: 0.5rem;
     color: rgb(122, 121, 121);
