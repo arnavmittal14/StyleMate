@@ -1,0 +1,49 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .outfit-table {
+    width: 100%;
+    margin: 10px 0;
+    border-collapse: collapse;
+  }
+  
+  .outfit-table th, .outfit-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .outfit-table th {
+    background: #f4f4f4;
+  }
+  
+  .close-button {
+    background: #dcbfb2;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .close-button:hover {
+    background: #bba297;
+  }
+  

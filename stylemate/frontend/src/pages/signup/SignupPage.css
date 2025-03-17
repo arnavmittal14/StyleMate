@@ -1,0 +1,93 @@
+/* General Page Styling */
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.signup-card {
+  display: flex;
+  max-width: 600px;
+  max-height: 600px;
+  margin: 20px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: white;
+  color: #646363;
+}
+
+/* Left Section */
+.signup-left {
+  background-image: linear-gradient(to bottom, rgb(234, 217, 190), rgb(248, 225, 225));
+  color: #646363;
+  padding: 20px;
+  text-align: center;
+  flex: 1;
+  align-items: center;
+}
+
+.signup-left h2 {
+  margin-bottom: 10px;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.signup-left p {
+  font-size: 1rem;
+  color: #646363;
+}
+
+/* Right Section */
+.signup-right {
+  padding: 20px;
+  flex: 2;
+}
+
+/* Form Styling */
+.input-container {
+  margin-bottom: 15px;
+}
+
+input,
+select {
+  width: 100%;
+  border: none;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  color: #646363;
+  font-size: 1rem;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-bottom: 1px solid #dcbfb2;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Signup Button */
+.signup-button {
+  background: #dcbfb2;
+  color: white;
+  font-size: 1rem;
+}
+
+.signup-button:hover {
+  background: #bba297;
+}
+
+/* Login Link */
+.login-link {
+  margin-top: 20px;
+  text-align: center;
+}
