@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from ai_processor.views import generate_outfit
 
 from . import views
 from django.urls import include, path
@@ -24,6 +25,8 @@ urlpatterns = [
     path("api/profile_photo/<int:user_id>/", views.serve_profile_photo, name="serve_profile_photo"),
     path("api/update_user/", views.update_user, name="update_user"),
     path("api/serve_clothing_item/<int:item_id>/", views.serve_clothing_item, name="serve_clothing_item"),
+    path("api/generate-outfit/", generate_outfit, name="generate-outfit"),
+
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

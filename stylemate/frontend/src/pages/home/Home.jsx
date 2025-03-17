@@ -79,7 +79,7 @@ export default function Home() {
       setIsModalOpen(true); 
   
       try {
-        const response = await fetch("http://localhost:8000/generate-outfit/", {
+        const response = await fetch("http://localhost:8000/api/generate-outfit/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ occasion }),

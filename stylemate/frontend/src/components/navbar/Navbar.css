@@ -61,6 +61,7 @@
     border: none; /* Removes any default border */
     outline: none; /* Removes outline on focus */
     width: 100px;
+    margin-left: 15px;
   }
   
   .logout-button:hover {
