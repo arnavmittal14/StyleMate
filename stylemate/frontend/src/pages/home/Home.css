@@ -42,6 +42,13 @@
     color: #ccafa3; /* text-purple-600 */
     text-align: center;
   }
+
+  .generator-subtitle {
+    font-size: 0.9rem; /* text-lg */
+    font-weight: 600; /* font-semibold */
+    color: #ccafa3; 
+    text-align: center;
+  }
   
   /* Input section */
   .input-container {
@@ -70,10 +77,12 @@
     border-radius: 0.5rem; /* rounded-lg */
     border: none; /* Removes any default border */
     outline: none; /* Removes outline on focus */
+    width: 25%;
+    height: 2.4rem;
   }
   
   .generate-button:hover {
-    background-color: #bba297;; /* hover:bg-purple-700 */
+    background-color: #bba297;/* hover:bg-purple-700 */
   }
   
   /* Weather display */
