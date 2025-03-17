@@ -100,7 +100,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "stylemate_database",
         "USER": "root",
-        "PASSWORD": "P@$$w0rd123",
+        "PASSWORD": "new_password",
         "HOST": "127.0.0.1",  # Use 127.0.0.1 instead of localhost
         "PORT": "3306",
         "OPTIONS": {
