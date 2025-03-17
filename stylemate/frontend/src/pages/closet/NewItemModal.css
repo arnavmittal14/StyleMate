@@ -47,6 +47,7 @@
   .modal-buttons {
     display: flex;
     justify-content: space-between;
+    gap: 10px;
   }
   
   .add-item-button {
@@ -73,5 +74,38 @@
   
   .cancel-button:hover {
     background: #c82333;
+  }
+  
+  .delete-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .delete-modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    text-align: center;
+  }
+  
+  .delete-modal button {
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #ccafa3;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 0.5rem;
+  }
+  
+  .delete-modal button:hover {
+    background-color: #bba297;
   }
   

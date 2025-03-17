@@ -1,179 +1,123 @@
-// import { useState } from "react";
-// import "./ProfilePage.css";
+import React, { useState, useEffect } from "react";
+import "./ProfilePage2.css";
 
-// export default function ProfilePage() {
-//   const [selectedGender, setSelectedGender] = useState("");
-//   const [profileImage, setProfileImage] = useState("/profile.png");
-//   const [formData, setFormData] = useState({
-//     firstName: "",
-//     lastName: "",
-//     age: "",
-//     email: "",
-//     password: "",
-//   });
+export default function ProfilePage() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("Male");
+  const [profilePhotoFile, setProfilePhotoFile] = useState(null);
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState("/profile.png");
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-//   // handles upload of new profile pic 
-//   const handleImageUpload = (e) => {
-//     const file = e.target.files[0];
-//     if (file) {
-//       const reader = new FileReader();
-//       reader.onloadend = () => {
-//         setProfileImage(reader.result);
-//       };
-//       reader.readAsDataURL(file);
-//     }
-//   };
+  // Fetch current user info on mount
+  useEffect(() => {
+    fetch("http://localhost:8000/api/current_user/", {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setFirstName(data.user.first_name || "");
+          setLastName(data.user.last_name || "");
+          setEmail(data.user.email || "");
+          setGender(data.user.gender || "Male");
+          setProfilePhotoPreview(data.user.profile_photo_url || "/profile.png");
+        } else if (data.error) {
+          setError(data.error);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching current user:", err);
+        setError("Error fetching current user.");
+        setLoading(false);
+      });
+  }, []);
 
-//     // Handle form data change
-//     const handleChange = (e) => {
-//       const { name, value } = e.target;
-//       setFormData((prevData) => ({
-//         ...prevData,
-//         [name]: value,
-//       }));
-//     };
-
-//   return (
-//     <div className="profile-page">
-//       {/* Profile Section */}
-//       <div className="profile-container">
-//         <div className="profile-header">
-//           {/* Profile Image Upload */}
-//           <div className="profile-image-container">
-//             <img
-//               src="/profile.png"
-//               alt="Profile"
-//               className="profile-image"
-//             />
-            
-//             <label htmlFor="file-input" className="profile-upload-btn">
-//               📷
-//             </label>
-//           </div>
-
-//           {/* Profile Header */}
-//           <h2 className="profile-title">My Profile</h2>
-//           <p className="profile-subtitle">Manage your personal information</p>
-//         </div>
-
-//         {/* Profile Form */}
-//         <div className="profile-form">
-//           <div className="form-row">
-//             <div className="form-group">
-//               <label>First Name</label>
-//               <input
-//                 type="text"
-//                 name="firstName"
-//                 value={formData.firstName}
-//                 onChange={handleChange}
-//                 placeholder="First Name"
-//               />
-//             </div>
-//             <div className="form-group">
-//               <label>Last Name</label>
-//               <input
-//                 type="text"
-//                 name="lastName"
-//                 value={formData.lastName}
-//                 onChange={handleChange}
-//                 placeholder="Last Name"
-//               />
-//             </div>
-//           </div>
-
-//           <div className="form-group">
-//             <label>Age</label>
-//             <input
-//               type="number"
-//               name="age"
-//               value={formData.age}
-//               onChange={handleChange}
-//               placeholder="Age"
-//             />
-//           </div>
-
-//           <div className="form-group">
-//             <label>Email</label>
-//             <input
-//               type="email"
-//               name="email"
-//               value={formData.email}
-//               onChange={handleChange}
-//               placeholder="Email"
-//             />
-//           </div>
-
-//           <div className="form-group">
-//             <label>Password</label>
-//             <input
-//               type="password"
-//               name="password"
-//               value={formData.password}
-//               onChange={handleChange}
-//               placeholder="Password"
-//             />
-//           </div>
-
-//           {/* Gender Selection */}
-//           <div className="gender-selection">
-//             <label>Gender</label>
-//             <div className="gender-options">
-//               {["Male", "Female", "Other"].map((gender) => (
-//                 <button
-//                   key={gender}
-//                   className={`gender-button ${
-//                     selectedGender === gender ? "selected" : ""
-//                   }`}
-//                   onClick={() => setSelectedGender(gender)}
-//                 >
-//                   {gender}
-//                 </button>
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* Save Button */}
-//           <div className="save-button-container">
-//             <button className="save-button">Save Changes</button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-import './ProfilePage2.css';
-import React, { useState } from "react";
-
-export default function ProfileCard() {
-  const [firstName, setFirstName] = useState("First");
-  const [lastName, setLastName] = useState("Last");
-  const [email, setEmail] = useState("info@example.com");
-  const [password, setPassword] = useState("password");
-  const [gender, setGender] = useState("Female");
-  const [image, setImage] = useState("./profile.png");
-
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
+  // Handle file selection for profile photo
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
     if (file) {
+      setProfilePhotoFile(file);
       const reader = new FileReader();
-      reader.onload = (e) => setImage(e.target.result);
+      reader.onload = (evt) => setProfilePhotoPreview(evt.target.result);
       reader.readAsDataURL(file);
     }
   };
 
+  // Use XMLHttpRequest to send FormData and update upload progress
   const handleSave = () => {
-    alert(`Profile Saved!\n\nFirst Name: ${firstName}\nLast Name: ${lastName}\nEmail: ${email}\nGender: ${gender}`);
+    setError("");
+    setMessage("");
+
+    const formData = new FormData();
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
+    formData.append("email", email);
+    formData.append("gender", gender.toLowerCase());
+
+    if (profilePhotoFile) {
+      formData.append("profile_photo", profilePhotoFile);
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://localhost:8000/api/update_user/", true);
+    xhr.withCredentials = true;
+
+    // Update progress
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = Math.round((event.loaded / event.total) * 100);
+        setUploadProgress(percentComplete);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          if (response.message) {
+            setMessage(response.message);
+          } else {
+            setError(response.error || "Unknown error");
+          }
+        } catch (e) {
+          setError("Invalid response from server");
+        }
+      } else {
+        setError("Error updating user. Status: " + xhr.status);
+      }
+      setUploadProgress(0);
+    };
+
+    xhr.onerror = () => {
+      setError("Error updating user. Please try again.");
+      setUploadProgress(0);
+    };
+
+    xhr.send(formData);
   };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="profile-card">
       <div className="profile-left">
-        <img src={image} alt="Profile" className="profile-img" />
-        <input type="text" className="profile-name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-        <input type="text" className="profile-role" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-        <h5>Upload my own profile photo</h5>
-        <input type="file" accept="image/*" onChange={handleImageUpload} className="image-upload" />
+        <img
+          src={profilePhotoPreview}
+          alt="Profile"
+          className="profile-img"
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="image-upload"
+        />
       </div>
       <div className="profile-right">
         <h3>Personal Information</h3>
@@ -181,34 +125,65 @@ export default function ProfileCard() {
         <div className="info-row">
           <div>
             <strong>First Name</strong>
-            <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <input
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
           </div>
           <div>
             <strong>Last Name</strong>
-            <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <input
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
           </div>
         </div>
         <div className="info-row">
           <div>
             <strong>Email</strong>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div>
             <strong>Password</strong>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input type="password" placeholder="********" readOnly />
           </div>
         </div>
         <div className="info-row">
           <div className="gender-dropdown">
-            <strong>Gender   </strong>
-            <select value={gender} onChange={(e) => setGender(e.target.value)} className='gender-dropdown'>
+            <strong>Gender</strong>
+            <select
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              className="gender-dropdown"
+            >
               <option value="Male">Male</option>
               <option value="Female">Female</option>
-              <option value="Other">Other</option>
+              <option value="non-binary">Non-Binary</option>
+              <option value="other">Other</option>
             </select>
           </div>
         </div>
-        <button className="save-button" onClick={handleSave}>Save</button>
+        {uploadProgress > 0 && (
+          <div className="progress-bar-container">
+            <div
+              className="progress-bar"
+              style={{ width: `${uploadProgress}%` }}
+            >
+              {uploadProgress}%
+            </div>
+          </div>
+        )}
+        {error && <p className="error-message">{error}</p>}
+        {message && <p className="success-message">{message}</p>}
+        <button className="save-button" onClick={handleSave}>
+          Save Changes
+        </button>
       </div>
     </div>
   );
