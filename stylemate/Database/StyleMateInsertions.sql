@@ -3,34 +3,34 @@
 
 -- 2. Insert sample ClothingItems (using existing Subcategory IDs from your earlier inserts)
 -- Head Accessories (Subcategories: Hat (1), Sunglasses (2))
-INSERT INTO ClothingItems (item_name, description, subcategory_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
 VALUES 
 ('Trendy Hat', 'A stylish blue hat for sunny days.', 1, 'Blue', 'HatCo', 'https://example.com/images/trendy_hat.jpg'),
-('Cool Shades', 'Sleek sunglasses for a modern look.', 2, 'Black', 'ShadeMakers', 'https://example.com/images/cool_shades.jpg');
+('Cool Shades', 'Sleek sunglasses for a modern look.', 1, 'Black', 'ShadeMakers', 'https://example.com/images/cool_shades.jpg');
 
 -- Tops (Subcategories: Shirts (3), Jersey (4))
-INSERT INTO ClothingItems (item_name, description, subcategory_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
 VALUES 
-('Classic White Shirt', 'A crisp white shirt suitable for formal events.', 3, 'White', 'ShirtMasters', 'https://example.com/images/white_shirt.jpg'),
-('Sporty Jersey', 'A comfortable jersey ideal for casual outings.', 4, 'Red', 'SportWear', 'https://example.com/images/sporty_jersey.jpg');
+('Classic White Shirt', 'A crisp white shirt suitable for formal events.', 2, 'White', 'ShirtMasters', 'https://example.com/images/white_shirt.jpg'),
+('Sporty Jersey', 'A comfortable jersey ideal for casual outings.', 2, 'Red', 'SportWear', 'https://example.com/images/sporty_jersey.jpg');
 
 -- Outerwear (Subcategories: Jackets (5), Hoodies (6))
-INSERT INTO ClothingItems (item_name, description, subcategory_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
 VALUES 
-('Leather Jacket', 'A rugged leather jacket for a bold look.', 5, 'Black', 'LeatherWorks', 'https://example.com/images/leather_jacket.jpg'),
-('Cozy Hoodie', 'A soft hoodie perfect for cooler days.', 6, 'Grey', 'HoodieHub', 'https://example.com/images/cozy_hoodie.jpg');
+('Leather Jacket', 'A rugged leather jacket for a bold look.', 3, 'Black', 'LeatherWorks', 'https://example.com/images/leather_jacket.jpg'),
+('Cozy Hoodie', 'A soft hoodie perfect for cooler days.', 3, 'Grey', 'HoodieHub', 'https://example.com/images/cozy_hoodie.jpg');
 
 -- Bottoms (Subcategories: Pants (7), Shorts (8), Skirts (9), Dress (10))
-INSERT INTO ClothingItems (item_name, description, subcategory_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
 VALUES 
-('Slim Fit Pants', 'Modern slim fit pants for everyday wear.', 7, 'Navy', 'PantsPro', 'https://example.com/images/slim_fit_pants.jpg'),
-('Casual Shorts', 'Comfortable shorts for a relaxed style.', 8, 'Khaki', 'ShortsCo', 'https://example.com/images/casual_shorts.jpg');
+('Slim Fit Pants', 'Modern slim fit pants for everyday wear.', 4, 'Navy', 'PantsPro', 'https://example.com/images/slim_fit_pants.jpg'),
+('Casual Shorts', 'Comfortable shorts for a relaxed style.', 4, 'Khaki', 'ShortsCo', 'https://example.com/images/casual_shorts.jpg');
 
 -- Footwear (Subcategories: Shoes (11), Sandals (12), Heels (13))
-INSERT INTO ClothingItems (item_name, description, subcategory_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
 VALUES 
-('Running Shoes', 'Lightweight running shoes with excellent grip.', 11, 'White', 'RunFast', 'https://example.com/images/running_shoes.jpg'),
-('Beach Sandals', 'Perfect sandals for a day at the beach.', 12, 'Blue', 'SandalStyle', 'https://example.com/images/beach_sandals.jpg');
+('Running Shoes', 'Lightweight running shoes with excellent grip.', 5, 'White', 'RunFast', 'https://as2.ftcdn.net/v2/jpg/04/79/11/23/1000_F_479112366_dku6Ufwd9OVnRB3AZxonMgRzuZYeTTYY.jpg'),
+('Beach Sandals', 'Perfect sandals for a day at the beach.', 5, 'Blue', 'SandalStyle', 'https://example.com/images/beach_sandals.jpg');
 
 -- 3. Insert sample Closet entries (linking users to items they own)
 -- Assuming Alice owns a few items and Bob owns some others.

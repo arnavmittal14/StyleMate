@@ -16,6 +16,29 @@ export default function LoginPage() {
   const [showGuestPopup, setShowGuestPopup] = useState(false);
   const [guestGender, setGuestGender] = useState("female"); // default to female
 
+  // Helper to update AuthContext with current user data from backend
+  const fetchAndSetCurrentUser = () => {
+    fetch("http://localhost:8000/api/current_user/", {
+      method: "GET",
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user && data.user.user_id) {
+          // Update AuthContext with complete user data
+          login({ email: data.user.email, user_id: data.user.user_id });
+          navigate("/");
+        } else {
+          setError("Failed to retrieve user info after login");
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching current user:", err);
+        setError("Error fetching current user");
+      });
+  };
+
   // Regular login handler
   const handleLogin = (e) => {
     e.preventDefault();
@@ -31,10 +54,16 @@ export default function LoginPage() {
     })
       .then((res) => res.json())
       .then((data) => {
+        // If login is successful, data.message should be truthy.
+        // Check if user_id is included; if not, fetch current user.
         if (data.message) {
-          // Call login from context
-          login(email, password);
-          navigate("/");
+          if (data.user_id) {
+            login({ email, user_id: data.user_id });
+            navigate("/");
+          } else {
+            // If user_id is missing, fetch the current user info.
+            fetchAndSetCurrentUser();
+          }
         } else if (data.error) {
           setError(data.error);
         }
@@ -65,8 +94,6 @@ export default function LoginPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.user_id) {
-          // Optionally, set guest login info in your AuthContext.
-          // For demonstration, we assume guest accounts have specific emails:
           let guestEmail = "";
           if (guestGender.toLowerCase() === "male") {
             guestEmail = "guest_male@example.com";
@@ -75,7 +102,7 @@ export default function LoginPage() {
           } else {
             guestEmail = "guest_other@example.com";
           }
-          login({ email: guestEmail });
+          login({ email: guestEmail, user_id: data.user_id });
           setShowGuestPopup(false);
           navigate("/");
         } else if (data.error) {

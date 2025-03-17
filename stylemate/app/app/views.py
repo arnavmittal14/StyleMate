@@ -95,18 +95,21 @@ def api_register(request):
 
 @csrf_exempt
 def add_to_closet(request):
-    # Support both JSON and multipart form-data
-    if request.FILES:
-        # Multipart form-data request: use request.POST and request.FILES
+    content_type = request.content_type
+
+    if content_type.startswith("multipart/form-data"):
+        # Use Django's built-in parsing for multipart form-data
         data = request.POST
         photo = request.FILES.get('photo')
-    else:
-        # JSON request: parse JSON data and no file is uploaded
+    elif content_type.startswith("application/json"):
+        # Parse the JSON data directly from the body
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         photo = None
+    else:
+        return JsonResponse({'error': 'Unsupported content type'}, status=400)
 
     # Required fields
     item_name = data.get('item_name')
@@ -115,7 +118,7 @@ def add_to_closet(request):
         return JsonResponse({'error': 'Missing required fields: item_name and user_id'}, status=400)
     
     description   = data.get('description')
-    subcategory_id = data.get('subcategory_id')
+    category_id = data.get('category_id')
     color         = data.get('color')
     brand         = data.get('brand')
 
@@ -151,14 +154,14 @@ def add_to_closet(request):
         file_path = fs.save(f"processed/{filename}", ContentFile(output_io.read()))
         image_url = fs.url(file_path)
     else:
-        # Otherwise, check for an image_url in the JSON data
+        # Otherwise, check for an image_url in the data
         image_url = data.get('image_url')
     
     # Create or get the clothing item using the provided details and the processed image URL.
     clothing_item, created = ClothingItem.objects.get_or_create(
         item_name=item_name,
         description=description,
-        subcategory_id=subcategory_id,
+        category_id=category_id,
         color=color,
         brand=brand,
         image_url=image_url
@@ -308,7 +311,7 @@ def get_closet(request):
             'item_id': item.item_id,
             'item_name': item.item_name,
             'description': item.description,
-            'subcategory_id': item.subcategory_id,
+            'category_id': item.category_id,
             'color': item.color,
             'brand': item.brand,
             'image_url': item.image_url,

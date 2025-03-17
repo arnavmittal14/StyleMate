@@ -1,31 +1,102 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ClosetPage.css";
 import NewItemModal from "./NewItemModal";
 
 export default function ClosetPage() {
-  const allClothingItems = [
-    { image: "/defaultcloset/whitetee.png", name: "White Tee", category: "Tops" },
-    { image: "/defaultcloset/blacktee.png", name: "Black Tee", category: "Tops" },
-    { image: "/defaultcloset/bluejeans.png", name: "Blue Jeans", category: "Bottoms" },
-    { image: "/defaultcloset/blackjeans.png", name: "Black Jeans", category: "Bottoms" },
-    { image: "/defaultcloset/greyhoodie.png", name: "Grey Hoodie", category: "Outerwear" },
-    { image: "/defaultcloset/whitesneakers.png", name: "White Sneakers", category: "Footwear" },
-  ];
-
+  const [clothingItems, setClothingItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All Items");
-  const [clothingItems, setClothingItems] = useState(allClothingItems);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const [itemToEdit, setItemToEdit] = useState(null); // State for the item to edit
+  const [itemToEdit, setItemToEdit] = useState(null);
+  const [error, setError] = useState("");
 
-  // Add new item to the closet
-  const handleAddItem = (newItem) => {
-    setClothingItems([...clothingItems, newItem]);
+  const categoryMapping = {
+    1: "Head Accessory",
+    2: "Tops",
+    3: "Outerwear",
+    4: "Bottoms",
+    5: "Footwear"
+  };
+  // Fetch closet items from the backend using the current user's id stored in localStorage
+  const fetchClosetItems = () => {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      setError("User not logged in");
+      return;
+    }
+    fetch(`http://localhost:8000/api/get_closet/?user_id=${userId}`, {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.closet) {
+          setClothingItems(data.closet);
+        } else if (data.error) {
+          setError(data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching closet items:", err);
+        setError("Error fetching closet items");
+      });
   };
 
-  // Edit an existing item
+  useEffect(() => {
+    fetchClosetItems();
+  }, []);
+
+  // Called when a new item is added via the modal.
+  // This sends the item info along with the photo (if any) to the backend's add_to_closet endpoint.
+  const handleAddItem = (newItem) => {
+    setError("");
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      setError("User not logged in");
+      return;
+    }
+
+    // Create FormData to support file upload and text fields.
+    const formData = new FormData();
+    formData.append("item_name", newItem.item_name);
+    formData.append("description", newItem.description || "");
+    formData.append("category_id", newItem.category_id || "");
+    formData.append("color", newItem.color || "");
+    formData.append("brand", newItem.brand || "");
+    formData.append("user_id", userId);
+
+    // If an image file is provided from the modal, append it under key "photo"
+    if (newItem.photo) {
+      formData.append("photo", newItem.photo);
+    } else if (newItem.image_url) {
+      // Alternatively, if an image URL is provided, pass that.
+      formData.append("image_url", newItem.image_url);
+    }
+
+    fetch("http://localhost:8000/api/add_to_closet/", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.message) {
+          // On success, re-fetch closet items to update the UI.
+          fetchClosetItems();
+          setIsModalOpen(false);
+        } else if (data.error) {
+          setError(data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Error adding item to closet:", err);
+        setError("Error adding item. Please try again.");
+      });
+  };
+
+  // Edit and delete functions remain similar
   const handleEditItem = (updatedItem) => {
     const updatedItems = clothingItems.map((item, index) =>
       index === itemToEdit ? updatedItem : item
@@ -34,44 +105,46 @@ export default function ClosetPage() {
     setIsEditModalOpen(false);
   };
 
-  // Remove an item from the closet
   const handleDeleteItem = () => {
     const updatedItems = clothingItems.filter((_, i) => i !== itemToDelete);
     setClothingItems(updatedItems);
-    setIsDeleteModalOpen(false); // Close the modal after deletion
+    setIsDeleteModalOpen(false);
   };
 
-  // Open the delete confirmation modal
   const openDeleteModal = (index) => {
     setItemToDelete(index);
     setIsDeleteModalOpen(true);
   };
 
-  // Open the edit modal
   const openEditModal = (index) => {
     setItemToEdit(index);
     setIsEditModalOpen(true);
   };
 
-  // Filter clothing items based on the selected category
   const filteredItems =
     selectedCategory === "All Items"
       ? clothingItems
-      : clothingItems.filter((item) => item.category === selectedCategory);
+      : clothingItems.filter(
+          (item) => categoryMapping[item.category_id] === selectedCategory
+        );
 
   return (
     <div className="closet-container">
       {/* Filters Section */}
       <div className="filters-container">
-        {["All Items", "Tops", "Bottoms", "Footwear", "Outerwear"].map((filter, index) => (
-          <button
-            key={index}
-            className={`filter-button ${filter === selectedCategory ? "filter-button-active" : ""}`}
-            onClick={() => setSelectedCategory(filter)}
-          >
-            {filter}
-          </button>
-        ))}
+        {["All Items", "Head Accessory","Tops", "Bottoms","Outerwear", "Footwear" ].map(
+          (filter, index) => (
+            <button
+              key={index}
+              className={`filter-button ${
+                filter === selectedCategory ? "filter-button-active" : ""
+              }`}
+              onClick={() => setSelectedCategory(filter)}
+            >
+              {filter}
+            </button>
+          )
+        )}
       </div>
 
       {/* Add New Item Button */}
@@ -85,13 +158,14 @@ export default function ClosetPage() {
       <div className="closet-grid">
         {filteredItems.map((item, index) => (
           <div key={index} className="closet-item">
-            <img src={item.image} alt={item.name} className="items-image" />
-            <p className="item-name">{item.name}</p>
+            <img
+              src={item.image_url}
+              alt={item.item_name}
+              className="items-image"
+            />
+            <p className="item-name">{item.item_name}</p>
             <div className="action-buttons">
-              <button
-                className="edit-button"
-                onClick={() => openEditModal(index)}
-              >
+              <button className="edit-button" onClick={() => openEditModal(index)}>
                 ✏️
               </button>
               <button
@@ -106,14 +180,19 @@ export default function ClosetPage() {
       </div>
 
       {/* New Item Modal */}
-      {isModalOpen && <NewItemModal onClose={() => setIsModalOpen(false)} onAddItem={handleAddItem} />}
+      {isModalOpen && (
+        <NewItemModal
+          onClose={() => setIsModalOpen(false)}
+          onAddItem={handleAddItem}
+        />
+      )}
 
       {/* Edit Item Modal */}
       {isEditModalOpen && (
         <NewItemModal
           onClose={() => setIsEditModalOpen(false)}
-          onAddItem={handleEditItem} // Use handleEditItem to update
-          initialItem={clothingItems[itemToEdit]} // Pass the initial item to the modal
+          onAddItem={handleEditItem}
+          initialItem={clothingItems[itemToEdit]}
         />
       )}
 
@@ -127,6 +206,7 @@ export default function ClosetPage() {
           </div>
         </div>
       )}
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 }
