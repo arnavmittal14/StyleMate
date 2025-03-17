@@ -10,6 +10,8 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.core.files.storage import FileSystemStorage
+import base64
+from closet.models import Closet, ClothingItem
 
 # Image processing imports
 from rembg import remove
@@ -96,86 +98,102 @@ def api_register(request):
 
 @csrf_exempt
 def add_to_closet(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST method allowed"}, status=405)
+
     content_type = request.content_type
 
     if content_type.startswith("multipart/form-data"):
         data = request.POST
-        photo = request.FILES.get('photo')
+        photo = request.FILES.get("photo")  # Get uploaded photo file
     elif content_type.startswith("application/json"):
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
         photo = None
     else:
-        return JsonResponse({'error': 'Unsupported content type'}, status=400)
+        return JsonResponse({"error": "Unsupported content type"}, status=400)
 
     # Required fields
-    item_name = data.get('item_name')
-    user_id = data.get('user_id')
+    item_name = data.get("item_name")
+    user_id = data.get("user_id")
     if not item_name or not user_id:
-        return JsonResponse({'error': 'Missing required fields: item_name and user_id'}, status=400)
-    
-    description = data.get('description')
-    category_id = data.get('category_id')
-    color = data.get('color')
-    brand = data.get('brand')
+        return JsonResponse({"error": "Missing required fields: item_name and user_id"}, status=400)
 
-    image_data = None  # This will store the processed binary image data
+    description = data.get("description")
+    category_id = data.get("category_id")
+    color = data.get("color")
+    brand = data.get("brand")
+
+    # Save Image if provided
+    image_url = None  # Default to None if no image is uploaded
 
     if photo:
-        # Validate file extension and MIME type
-        if not photo.name.lower().endswith(('.jpg', '.jpeg', '.png')):
-            return JsonResponse({'error': 'Unsupported file type. Only JPG and PNG are allowed.'}, status=400)
-        if photo.content_type not in ['image/jpeg', 'image/png']:
-            return JsonResponse({'error': 'Unsupported file type.'}, status=400)
-        
         try:
-            input_image = Image.open(photo)
-        except Exception:
-            return JsonResponse({'error': 'Invalid image file'}, status=400)
-        
-        # Process image with rembg to remove background
-        output_image = remove(input_image)
-        
-        # Convert processed image to PNG bytes
-        output_io = BytesIO()
-        output_image.save(output_io, format='PNG')
-        image_data = output_io.getvalue()  # binary data
+            # Validate file type
+            if not photo.name.lower().endswith((".jpg", ".jpeg", ".png")):
+                return JsonResponse({"error": "Unsupported file type. Only JPG and PNG are allowed."}, status=400)
 
-    # Create or update the clothing item with binary image data
+            # Open image
+            input_image = Image.open(photo)
+
+            # Ensure image is in correct mode
+            if input_image.mode != "RGB":
+                input_image = input_image.convert("RGB")
+
+            # Apply background removal
+            output_image = remove(input_image)
+
+            # Convert to PNG bytes
+            output_io = BytesIO()
+            output_image.save(output_io, format="PNG")
+            processed_bytes = output_io.getvalue()
+
+            # Generate unique filename
+            filename = f"{item_name.replace(' ', '_').lower()}_{user_id}.png"
+            file_path = os.path.join("closet", filename)  # Store under media/closet/
+            
+            # Save the processed image
+            with default_storage.open(file_path, "wb") as out_file:
+                out_file.write(processed_bytes)
+
+            image_url = f"/media/{file_path}"  # URL to access image
+
+        except Exception as e:
+            return JsonResponse({"error": f"Error processing image: {str(e)}"}, status=400)
+
+    # Create ClothingItem instance
     clothing_item, created = ClothingItem.objects.get_or_create(
         item_name=item_name,
-        description=description,
-        category_id=category_id,
-        color=color,
-        brand=brand,
-        defaults={'image_url': image_data}
+        defaults={
+            "description": description,
+            "category_id": category_id,
+            "color": color,
+            "brand": brand,
+            "image_url": image_url,
+        },
     )
-    # If item already exists and an image was uploaded, update its image binary
-    if not created and image_data:
-        clothing_item.image_url = image_data
+
+    if not created and image_url:
+        clothing_item.image_url = image_url  # Update image if item exists
         clothing_item.save()
-    
-    # Retrieve the user
+
+    # Retrieve User
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=404)
-    
-    # Link the clothing item to the user's closet
-    closet_entry, _ = Closet.objects.get_or_create(user=user, item=clothing_item)
-    
-    # Instead of returning the binary data, we return a URL to serve it.
-    image_url = f"http://localhost:8000/api/serve_clothing_item/{clothing_item.item_id}/"
-    
-    return JsonResponse({
-        'message': 'Clothing item added to closet',
-        'closet_id': closet_entry.closet_id,
-        'item_id': clothing_item.item_id,
-        'image_url': image_url
-    }, status=201)
+        return JsonResponse({"error": "User not found"}, status=404)
 
+    # Link ClothingItem to User's Closet
+    closet_entry, _ = Closet.objects.get_or_create(user=user, item=clothing_item)
+
+    return JsonResponse({
+        "message": "Clothing item added to closet",
+        "closet_id": closet_entry.closet_id,
+        "item_id": clothing_item.item_id,
+        "image_url": image_url,  # Return the image URL
+    }, status=201)
 
 
 @csrf_exempt
@@ -283,6 +301,10 @@ def get_saved_outfits(request):
     
     return JsonResponse({'saved_outfits': data}, status=200)
 
+
+
+User = get_user_model()
+
 @csrf_exempt
 def get_closet(request):
     if request.method != 'GET':
@@ -299,8 +321,17 @@ def get_closet(request):
     
     closet_entries = Closet.objects.filter(user=user)
     data = []
+    
     for entry in closet_entries:
         item = entry.item
+        
+        # Check if image_url contains binary data
+        if isinstance(item.image_url, bytes):
+            image_base64 = base64.b64encode(item.image_url).decode('utf-8')
+            image_url = f"data:image/png;base64,{image_base64}"
+        else:
+            image_url = item.image_url  # If it's a URL, use it directly
+        
         data.append({
             'closet_id': entry.closet_id,
             'item_id': item.item_id,
@@ -309,11 +340,12 @@ def get_closet(request):
             'category_id': item.category_id,
             'color': item.color,
             'brand': item.brand,
-            'image_url': item.image_url,
+            "image_url": request.build_absolute_uri(entry.item.image_url) if entry.item.image_url else None,
             'created_at': item.created_at,
         })
     
     return JsonResponse({'closet': data}, status=200)
+
 
 @csrf_exempt
 def get_users(request):
@@ -461,12 +493,12 @@ def serve_clothing_item(request, item_id):
     if not item.image_url:
         raise Http404("No image available")
     
-    # Ensure the data is bytes (if it comes as memoryview, convert to bytes)
+    # Convert to bytes in case it is a memoryview
     image_data = bytes(item.image_url)
-    
     response = HttpResponse(image_data, content_type="image/png")
     response["Content-Length"] = len(image_data)
     return response
+
 
 
 

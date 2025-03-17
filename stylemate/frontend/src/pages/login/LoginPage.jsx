@@ -184,13 +184,24 @@ export default function LoginPage() {
           <div className="popup-card">
             <h3>Choose Your Preferred Closet</h3>
             <div className="closet-selection">
-              <button onClick={() => setGuestGender("female")}>
+            <button 
+                className={guestGender === "female" ? "selected" : ""} 
+                onClick={() => setGuestGender("female")}
+              >
                 Female Closet
               </button>
-              <button onClick={() => setGuestGender("male")}>
+
+              <button 
+                className={guestGender === "male" ? "selected" : ""} 
+                onClick={() => setGuestGender("male")}
+              >
                 Male Closet
               </button>
-              <button onClick={() => setGuestGender("other")}>
+
+              <button 
+                className={guestGender === "other" ? "selected" : ""} 
+                onClick={() => setGuestGender("other")}
+              >
                 Other
               </button>
               <div className="conf-cancel">
