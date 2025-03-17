@@ -82,7 +82,7 @@ export default function Home() {
         const response = await fetch("http://localhost:8000/api/generate-outfit/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ occasion }),
+          body: JSON.stringify({ occasion, user_id: localStorage.getItem("user_id")  }),
         });
   
         if (!response.ok) throw new Error("Failed to fetch outfit");
