@@ -4,6 +4,16 @@ import "./OutfitModal.css";
 const OutfitModal = ({ isOpen, onClose, occasion, loading, outfit }) => {
   if (!isOpen) return null; // Prevent rendering if modal is closed
 
+  const saveToFavorites = () => {
+    if (!outfit) return;
+
+    const savedOutfits = JSON.parse(localStorage.getItem("favorites")) || [];
+    const newOutfit = { occasion, ...outfit };
+    localStorage.setItem("favorites", JSON.stringify([...savedOutfits, newOutfit]));
+
+    alert("Outfit saved to favorites!");
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal">
@@ -31,7 +41,12 @@ const OutfitModal = ({ isOpen, onClose, occasion, loading, outfit }) => {
           <p>Failed to load outfit. Please try again.</p>
         )}
 
-        <button className="close-button" onClick={onClose}>Close</button>
+        <div className="modal-buttons">
+          <button className="save-button" onClick={saveToFavorites} disabled={!outfit}>
+            Save to Favorites
+          </button>
+          <button className="close-button" onClick={onClose}>Close</button>
+        </div>
       </div>
     </div>
   );
