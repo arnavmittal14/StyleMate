@@ -47,6 +47,7 @@
   .modal-buttons {
     display: flex;
     justify-content: space-between;
+    gap: 10px;
   }
   
   .add-item-button {

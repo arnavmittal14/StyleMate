@@ -1,5 +1,7 @@
 import {React, useEffect, useState} from "react";  
 import { useNavigate } from "react-router-dom";
+
+import OutfitModal from "./OutfitModal";
 import "./Home.css";
 
 export default function Home() {
@@ -11,6 +13,11 @@ export default function Home() {
       temp: "",
       feelsLike: "",
     });
+
+    const [occasion, setOccasion] = useState("");
+    const [outfit, setOutfit] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
       // Redirect to login if not authenticated
@@ -30,6 +37,7 @@ export default function Home() {
         try {
           const response = await fetch(url);
           const data = await response.json();
+
           setWeather({
             city: data.name,
             condition: data.weather[0].description,
@@ -64,6 +72,31 @@ export default function Home() {
       }
     }, [navigate]);
 
+    const generateOutfit = async () => {
+      if (!occasion.trim()) return;
+  
+      setLoading(true);
+      setIsModalOpen(true); 
+  
+      try {
+        const response = await fetch("http://localhost:8000/generate-outfit/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ occasion }),
+        });
+  
+        if (!response.ok) throw new Error("Failed to fetch outfit");
+  
+        const data = await response.json();
+        setOutfit(data);
+      } catch (error) {
+        console.error("Error generating outfit:", error);
+        setOutfit(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
   return (
     <div className="home-container">
       
@@ -83,8 +116,10 @@ export default function Home() {
             type="text"
             placeholder="What's the occasion?"
             className="occasion-input"
+            value={occasion}
+            onChange={(e) => setOccasion(e.target.value)}
           />
-          <button className="generate-button">Generate</button>
+          <button className="generate-button" onClick={generateOutfit}>Generate</button>
         </div>
 
         {/* Weather Display */}
@@ -95,6 +130,16 @@ export default function Home() {
           <p className="weather-feels-like">{weather.feelsLike}</p>
         </div>
       </div>
+
+       {/* Outfit Modal */}
+       <OutfitModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        occasion={occasion}
+        loading={loading}
+        outfit={outfit}
+      />
+
     </div>
   );
 }
