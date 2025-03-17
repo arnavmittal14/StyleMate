@@ -92,14 +92,3 @@ button {
   text-align: center;
 }
 
-.login-button {
-  background: none;
-  border: none;
-  color: #dcbfb2;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.login-button:hover {
-  text-decoration: underline;
-}

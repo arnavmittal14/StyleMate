@@ -85,7 +85,7 @@ export default function ClosetPage() {
       <div className="closet-grid">
         {filteredItems.map((item, index) => (
           <div key={index} className="closet-item">
-            <img src={item.image} alt={item.name} className="item-image" />
+            <img src={item.image} alt={item.name} className="items-image" />
             <p className="item-name">{item.name}</p>
             <div className="action-buttons">
               <button

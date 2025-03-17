@@ -1,18 +1,18 @@
-import { useState } from "react";
-import FavoriteItem from "./FavoriteItem";
-import "./FavoritesPage.css";
+// FavoritesPage.jsx
+import React from 'react';
+import FavoriteItem from './FavoriteItem';
+import './FavoritesPage.css';
 
-export default function FavoritesPage() {
+const FavoritesPage = () => {
   const favoriteOutfits = [
     {
       id: 1,
       name: "Casual Weekend Look",
       items: [
-        { image: "/casual-1.jpg", name: "T-shirt", occasion: "Brunch", temperature: "15-20°C" },
-        { image: "/casual-2.jpg", name: "Jeans", occasion: "Brunch", temperature: "15-20°C" },
-        { image: "/casual-3.jpg", name: "Sneakers", occasion: "Brunch", temperature: "15-20°C" },
-        { image: "/casual-4.jpg", name: "Sunglasses", occasion: "Brunch", temperature: "15-20°C" },
-        { image: "/casual-5.jpg", name: "Hat", occasion: "Brunch", temperature: "15-20°C" },
+        { image: "/defaultcloset/greyhoodie.png", name: "T-shirt", occasion: "Brunch", temperature: "15-20°C" },
+        { image: "/defaultcloset/blackjeans.png", name: "Jeans", occasion: "Brunch", temperature: "15-20°C" },
+        { image: "/defaultcloset/whitesneakers.png", name: "Sneakers", occasion: "Brunch", temperature: "15-20°C" },
+        { image: "greyhoodie.png", name: "Sunglasses", occasion: "Brunch", temperature: "15-20°C" },
       ],
     },
     {
@@ -39,69 +39,12 @@ export default function FavoritesPage() {
     },
   ];
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const totalSlides = favoriteOutfits.length;
-
-  const goToNextSlide = () => {
-    if (currentSlide < totalSlides - 1) {
-      setCurrentSlide(currentSlide + 1);
-    }
-  };
-
-  const goToPreviousSlide = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(currentSlide - 1);
-    }
-  };
-
   return (
-    <div className="favorites-page">
-      {/* Page Header */}
-      <div className="page-header">
-        <h2 className="page-title">My Favorite Outfits</h2>
-        <p className="page-description">Your personally curated collection of favorite outfits</p>
-      </div>
-
-      {/* Outfit Title (on its own line) */}
-      <div className="outfit-title-container">
-        <h3 className="outfit-title">{favoriteOutfits[currentSlide].name}</h3>
-      </div>
-
-      {/* Favorites Carousel */}
-      <div className="carousel-container">
-        <button className="carousel-button carousel-button-left" onClick={goToPreviousSlide}>
-          ← 
-        </button>
-
-        <div className="carousel-items">
-          {/* Map the current outfit and its items */}
-          {favoriteOutfits[currentSlide].items.map((item, index) => (
-            <FavoriteItem
-              key={index}
-              image={item.image}
-              name={item.name}
-              occasion={item.occasion}
-              temperature={item.temperature}
-            />
-          ))}
-        </div>
-
-        <button className="carousel-button carousel-button-right" onClick={goToNextSlide}>
-        →
-        </button>
-      </div>
-
-      {/* Pagination Dots */}
-      <div className="pagination-dots">
-        {favoriteOutfits.map((_, index) => (
-          <div
-            key={index}
-            className={`pagination-dot ${currentSlide === index ? "active" : ""}`}
-            onClick={() => setCurrentSlide(index)}
-          ></div>
-        ))}
-      </div>
+    <div className="favorites-container">
+      {favoriteOutfits.map((outfit) => (
+        <FavoriteItem key={outfit.id} name={outfit.name} items={outfit.items} />
+      ))}
     </div>
   );
-}
+};
+export default FavoritesPage;
