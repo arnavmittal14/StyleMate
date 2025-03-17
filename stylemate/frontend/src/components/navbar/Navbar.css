@@ -52,3 +52,17 @@
     margin: 0;
     padding: 0;
   }
+
+  .logout-button {
+    background-color: #dcbfb2;
+    color: #4b5563;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    border-radius: 0.5rem; /* rounded-lg */
+    border: none; /* Removes any default border */
+    outline: none; /* Removes outline on focus */
+    width: 100px;
+  }
+  
+  .logout-button:hover {
+    background-color: #bba297;; /* hover:bg-purple-700 */
+  }
