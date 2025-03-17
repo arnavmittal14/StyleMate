@@ -38,7 +38,7 @@ def generate_outfit(request):
             clothing_items = [
                 {
                     "name": item.item.item_name,
-                    "category": item.item.subcategory.subcategory_name if item.item.subcategory else "Unknown",
+                    "category": item.item.category_id if item.item.subcategory else "Unknown",
                     "color": item.item.color or "Unknown",
                     "brand": item.item.brand or "Unknown",
                     "image_url": item.item.image_url,
