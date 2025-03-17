@@ -1,36 +1,35 @@
 -- Sample Insertions
 
-
 -- 2. Insert sample ClothingItems (using existing Subcategory IDs from your earlier inserts)
 -- Head Accessories (Subcategories: Hat (1), Sunglasses (2))
-INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand)
 VALUES 
-('Trendy Hat', 'A stylish blue hat for sunny days.', 1, 'Blue', 'HatCo', 'https://example.com/images/trendy_hat.jpg'),
-('Cool Shades', 'Sleek sunglasses for a modern look.', 1, 'Black', 'ShadeMakers', 'https://example.com/images/cool_shades.jpg');
+('Trendy Hat', 'A stylish blue hat for sunny days.', 1, 'Blue', 'HatCo'),
+('Cool Shades', 'Sleek sunglasses for a modern look.', 1, 'Black', 'ShadeMakers');
 
 -- Tops (Subcategories: Shirts (3), Jersey (4))
-INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand)
 VALUES 
-('Classic White Shirt', 'A crisp white shirt suitable for formal events.', 2, 'White', 'ShirtMasters', 'https://example.com/images/white_shirt.jpg'),
-('Sporty Jersey', 'A comfortable jersey ideal for casual outings.', 2, 'Red', 'SportWear', 'https://example.com/images/sporty_jersey.jpg');
+('Classic White Shirt', 'A crisp white shirt suitable for formal events.', 2, 'White', 'ShirtMasters'),
+('Sporty Jersey', 'A comfortable jersey ideal for casual outings.', 2, 'Red', 'SportWear');
 
 -- Outerwear (Subcategories: Jackets (5), Hoodies (6))
-INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand)
 VALUES 
-('Leather Jacket', 'A rugged leather jacket for a bold look.', 3, 'Black', 'LeatherWorks', 'https://example.com/images/leather_jacket.jpg'),
-('Cozy Hoodie', 'A soft hoodie perfect for cooler days.', 3, 'Grey', 'HoodieHub', 'https://example.com/images/cozy_hoodie.jpg');
+('Leather Jacket', 'A rugged leather jacket for a bold look.', 3, 'Black', 'LeatherWorks'),
+('Cozy Hoodie', 'A soft hoodie perfect for cooler days.', 3, 'Grey', 'HoodieHub');
 
 -- Bottoms (Subcategories: Pants (7), Shorts (8), Skirts (9), Dress (10))
-INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand)
 VALUES 
-('Slim Fit Pants', 'Modern slim fit pants for everyday wear.', 4, 'Navy', 'PantsPro', 'https://example.com/images/slim_fit_pants.jpg'),
-('Casual Shorts', 'Comfortable shorts for a relaxed style.', 4, 'Khaki', 'ShortsCo', 'https://example.com/images/casual_shorts.jpg');
+('Slim Fit Pants', 'Modern slim fit pants for everyday wear.', 4, 'Navy', 'PantsPro'),
+('Casual Shorts', 'Comfortable shorts for a relaxed style.', 4, 'Khaki', 'ShortsCo');
 
 -- Footwear (Subcategories: Shoes (11), Sandals (12), Heels (13))
-INSERT INTO ClothingItems (item_name, description, category_id, color, brand, image_url)
+INSERT INTO ClothingItems (item_name, description, category_id, color, brand)
 VALUES 
-('Running Shoes', 'Lightweight running shoes with excellent grip.', 5, 'White', 'RunFast', 'https://as2.ftcdn.net/v2/jpg/04/79/11/23/1000_F_479112366_dku6Ufwd9OVnRB3AZxonMgRzuZYeTTYY.jpg'),
-('Beach Sandals', 'Perfect sandals for a day at the beach.', 5, 'Blue', 'SandalStyle', 'https://example.com/images/beach_sandals.jpg');
+('Running Shoes', 'Lightweight running shoes with excellent grip.', 5, 'White', 'RunFast'),
+('Beach Sandals', 'Perfect sandals for a day at the beach.', 5, 'Blue', 'SandalStyle');
 
 -- 3. Insert sample Closet entries (linking users to items they own)
 -- Assuming Alice owns a few items and Bob owns some others.
@@ -53,15 +52,5 @@ INSERT INTO OutfitSets (user_id, outfit_name, head_accessory_item_id, top_item_i
 VALUES 
 (1, 'Casual Cool', 1, 3, 5, 7, 9, 'Sunny');
 
--- Creating an outfit set for Bob using his items:
-INSERT INTO OutfitSets (user_id, outfit_name, head_accessory_item_id, top_item_id, outerwear_item_id, bottom_item_id, footwear_item_id, current_weather)
-VALUES 
-(2, 'Laid-back Look', 2, 4, 6, 8, 10, 'Snowy');
-
--- 5. Insert sample SavedOutfits
--- Alice saves Bob's outfit, and Bob saves Alice's outfit:
-INSERT INTO SavedOutfits (user_id, outfit_id)
-VALUES 
-(1, 2),  -- Alice saves Bob's "Laid-back Look"
-(2, 1);  -- Bob saves Alice's "Casual Cool"
+-- Creating an outfit set for Bob using his item
 

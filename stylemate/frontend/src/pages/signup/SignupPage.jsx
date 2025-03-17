@@ -11,7 +11,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [gender, setGender] = useState("Female");
+  const [gender, setGender] = useState("");
   const [error, setError] = useState("");
 
   const handleSignUp = (e) => {

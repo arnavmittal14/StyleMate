@@ -2,17 +2,19 @@ import { useState, useEffect } from "react";
 import "./NewItemModal.css";
 
 export default function NewItemModal({ onClose, onAddItem, initialItem }) {
-  const [image, setImage] = useState(initialItem?.image || null);
-  const [name, setName] = useState(initialItem?.name || "");
+  const [imageFile, setImageFile] = useState(null); // Store actual file
+  const [imagePreview, setImagePreview] = useState(initialItem?.image_url || null);
+  const [name, setName] = useState(initialItem?.item_name || "");
   const [categoryId, setCategoryId] = useState(initialItem?.category_id || "2");
 
   // Handle file upload
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImage(e.target.result);
+        setImagePreview(e.target.result); // Show preview
       };
       reader.readAsDataURL(file);
     }
@@ -21,22 +23,27 @@ export default function NewItemModal({ onClose, onAddItem, initialItem }) {
   // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!image || !name.trim()) {
+    if (!imageFile || !name.trim()) {
       alert("Please upload an image and enter a name.");
       return;
     }
 
-    const newItem = { image, item_name: name, category_id: categoryId };
+    const newItem = {
+      photo: imageFile, // Use actual file object for FormData compatibility
+      item_name: name,
+      category_id: categoryId,
+    };
+
     onAddItem(newItem);
     onClose();
   };
 
-  // If editing, update the state based on the initialItem prop
+  // Populate form when editing an existing item
   useEffect(() => {
     if (initialItem) {
-      setImage(initialItem.image);
-      setName(initialItem.name);
-      setCategoryId(initialItem.categoryId);
+      setImagePreview(initialItem.image_url);
+      setName(initialItem.item_name);
+      setCategoryId(initialItem.category_id);
     }
   }, [initialItem]);
 
@@ -46,9 +53,9 @@ export default function NewItemModal({ onClose, onAddItem, initialItem }) {
         <h2>{initialItem ? "Edit Item" : "Add New Item"}</h2>
         <form onSubmit={handleSubmit}>
           <label>Upload Image:</label>
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <input type="file" accept="image/*" onChange={handleImageUpload} required={!initialItem} />
 
-          {image && <img src={image} alt="Preview" className="image-preview" />}
+          {imagePreview && <img src={imagePreview} alt="Preview" className="image-preview" />}
 
           <label>Item Name:</label>
           <input
