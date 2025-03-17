@@ -1,7 +1,9 @@
 import {React, useEffect, useState} from "react";  
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 export default function Home() {
+    const navigate = useNavigate();
 
     const [weather, setWeather] = useState({
       city: "Loading...",
@@ -11,6 +13,13 @@ export default function Home() {
     });
 
     useEffect(() => {
+      // Redirect to login if not authenticated
+      const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+      if (!isAuthenticated) {
+        navigate("/login");
+        return;
+      }
+
       let timeoutId;
   
       // Function to fetch weather
@@ -53,7 +62,7 @@ export default function Home() {
       } else {
         errorCallback(); // If geolocation is not supported
       }
-    }, []);
+    }, [navigate]);
 
   return (
     <div className="home-container">
@@ -68,6 +77,7 @@ export default function Home() {
       {/* Outfit Generator */}
       <div className="generator-card">
         <h3 className="generator-title">Generate Your Outfit</h3>
+        <h6 className="generator-subtitle">keep it brief for optimal results!</h6>
         <div className="input-container">
           <input
             type="text"

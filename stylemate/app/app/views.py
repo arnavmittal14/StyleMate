@@ -2,7 +2,7 @@ import os
 import json
 from io import BytesIO
 
-from django.http import JsonResponse, Http404
+from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import get_user_model
@@ -351,44 +351,40 @@ def upload_and_process_photo(request):
     if request.method != 'POST':
         return HttpResponseBadRequest("Only POST method allowed.")
 
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "User not authenticated"}, status=401)
+
     if 'photo' not in request.FILES:
         return HttpResponseBadRequest("No photo file uploaded.")
 
     photo = request.FILES['photo']
-    
-    # Validate file type by extension and MIME type.
+
+    # Validate file type by extension and MIME type
     if not photo.name.lower().endswith(('.jpg', '.jpeg', '.png')):
         return HttpResponseBadRequest("Unsupported file type. Only JPG and PNG are allowed.")
     if photo.content_type not in ['image/jpeg', 'image/png']:
         return HttpResponseBadRequest("Unsupported file type.")
 
-    # Open the uploaded image using Pillow.
     try:
         input_image = Image.open(photo)
     except Exception:
         return HttpResponseBadRequest("Invalid image file.")
 
-    # Remove the background using rembg.
+    # Remove background using rembg
     output_image = remove(input_image)
 
-    # Save the output image as PNG to an in-memory file.
+    # Convert to PNG in-memory
     output_io = BytesIO()
     output_image.save(output_io, format='PNG')
-    output_io.seek(0)
+    processed_bytes = output_io.getvalue()  # raw bytes of the PNG
 
-    # Use the original filename's base, but change the extension to .png.
-    base_name = os.path.splitext(photo.name)[0]
-    filename = f"{base_name}.png"
-
-    # Save the processed image using Django's FileSystemStorage (which uses MEDIA_ROOT).
-    fs = FileSystemStorage()
-    # Save under the "processed/" subfolder.
-    file_path = fs.save(f"processed/{filename}", ContentFile(output_io.read()))
-    file_url = fs.url(file_path)
+    # Store the bytes in the user's profile_photo_data field
+    user = request.user
+    user.profile_photo_data = processed_bytes
+    user.save()
 
     return JsonResponse({
-        'message': 'Photo processed successfully',
-        'processed_image_url': file_url
+        'message': 'Photo processed and stored in DB',
     })
 
 @csrf_exempt
@@ -397,13 +393,19 @@ def current_user(request):
         return JsonResponse({'error': 'User not authenticated'}, status=401)
     
     user = request.user
+    # If the user has binary data for the profile photo, construct a URL to serve it.
+    if hasattr(user, "profile_photo_data") and user.profile_photo_data:
+        photo_url = f"http://localhost:8000/api/profile_photo/{user.user_id}/"
+    else:
+        photo_url = "/profile.png"
+    
     data = {
         'user_id': user.user_id,
         'first_name': user.first_name,
         'last_name': user.last_name,
         'email': user.email,
         'gender': user.gender,
-        'profile_photo_url': user.profile_photo_url or "/profile.png",
+        'profile_photo_url': photo_url,
     }
     return JsonResponse({'user': data})
 
@@ -440,3 +442,76 @@ def guest_login(request):
         return JsonResponse({'message': 'Guest login successful', 'user_id': user.user_id})
     else:
         return JsonResponse({'error': 'Guest login failed'}, status=401)
+    
+def serve_profile_photo(request, user_id):
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        raise Http404("User not found")
+    
+    if not hasattr(user, "profile_photo_data") or not user.profile_photo_data:
+        raise Http404("No profile photo")
+    
+    return HttpResponse(user.profile_photo_data, content_type="image/png")
+
+@csrf_exempt
+def update_user(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+    user = request.user
+
+    # Get text fields from request.POST (for multipart form-data)
+    first_name = request.POST.get('first_name', user.first_name)
+    last_name = request.POST.get('last_name', user.last_name)
+    email = request.POST.get('email', user.email)
+    gender = request.POST.get('gender', user.gender)
+    if gender:
+        gender = gender.lower()  # Convert to lowercase to match model choices
+
+    # Handle profile photo file
+    profile_photo = request.FILES.get('profile_photo')
+    if profile_photo:
+        # Validate file type
+        if not profile_photo.name.lower().endswith(('.jpg', '.jpeg', '.png')):
+            return HttpResponseBadRequest("Unsupported file type. Only JPG and PNG are allowed.")
+        if profile_photo.content_type not in ['image/jpeg', 'image/png']:
+            return HttpResponseBadRequest("Unsupported file type.")
+
+        try:
+            input_image = Image.open(profile_photo)
+        except Exception:
+            return HttpResponseBadRequest("Invalid image file.")
+
+        # Patch for Pillow if Image.Resampling is missing
+        if not hasattr(Image, "Resampling"):
+            Image.Resampling = Image
+            Image.Resampling.LANCZOS = Image.LANCZOS
+
+        try:
+            # Remove background using rembg
+            output_image = remove(input_image)
+        except Exception as e:
+            return JsonResponse({'error': f"Error processing image: {e}"}, status=400)
+
+        # Convert the processed image to PNG bytes
+        output_io = BytesIO()
+        output_image.save(output_io, format='PNG')
+        processed_bytes = output_io.getvalue()
+        user.profile_photo_data = processed_bytes
+
+    # Update user fields
+    user.first_name = first_name
+    user.last_name = last_name
+    user.email = email
+    user.gender = gender
+
+    try:
+        user.save()
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'message': 'User updated successfully'})

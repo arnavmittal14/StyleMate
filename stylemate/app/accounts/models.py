@@ -39,7 +39,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=255, db_column="password_hash")
     
     # Optional profile photo field.
-    profile_photo_url = models.CharField(max_length=255, null=True, blank=True)
+    profile_photo_data = models.BinaryField(null=True, blank=True)
     
     # Standard Django user status fields.
     is_active = models.BooleanField(default=True)
