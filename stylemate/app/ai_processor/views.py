@@ -13,6 +13,7 @@ genai.configure(api_key=settings.GEMINI_API_KEY)
 
 @api_view(["POST"])
 def generate_outfit(request):
+    print(request.data)
     """
     Suggests an outfit based on the occasion:
     - If user is authenticated, retrieve clothing from the database (Closet table).
