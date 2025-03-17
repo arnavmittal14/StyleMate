@@ -8,7 +8,7 @@ class ClothingItem(models.Model):
     category_id = models.IntegerField(blank=True, null=True)
     color = models.CharField(max_length=50, blank=True, null=True)
     brand = models.CharField(max_length=100, blank=True, null=True)
-    image_url = models.BinaryField(null=True, blank=True)
+    image_url = models.CharField(max_length=500, blank=True, null=True)  # Store file path
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
