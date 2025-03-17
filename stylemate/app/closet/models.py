@@ -24,3 +24,11 @@ class Closet(models.Model):
     class Meta:
         db_table = 'Closet'
         managed = False  # if you're using native tables
+
+
+class Subcategories(models.Model):
+    subcategory_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'Subcategories'
