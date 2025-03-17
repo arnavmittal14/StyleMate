@@ -12,15 +12,50 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [gender, setGender] = useState("Female");
+  const [error, setError] = useState("");
 
   const handleSignUp = (e) => {
     e.preventDefault();
+    setError("");
+    
     if (password !== confirmPassword) {
       alert("Passwords do not match");
       return;
     }
-    login({ email }); // Simulate sign-up by logging in with the email
-    navigate("/"); // Redirect to home page
+
+    // Build the payload for the registration API.
+    const payload = {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      password1: password,
+      password2: password,
+      gender: gender.toLowerCase(),
+    };
+
+    console.log("Payload to register:", payload); // Debug output
+
+
+    fetch("http://localhost:8000/api/register/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.message) {
+          // Registration successful.
+          // Option 1: Automatically log the user in
+          login({ email }); // if your login function supports auto-login with email, etc.
+          navigate("/"); // redirect to home page
+        } else if (data.error) {
+          setError(data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Error during registration:", err);
+        setError("Registration failed. Please try again.");
+      });
   };
 
   return (
@@ -78,18 +113,30 @@ export default function SignupPage() {
               />
             </div>
             <div className="input-container">
-              <select value={gender} onChange={(e) => setGender(e.target.value)} required>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                required
+              >
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
               </select>
             </div>
+            {error && <p className="error-message">{error}</p>}
             <button type="submit" className="signup-button">
               Sign Up
             </button>
             <div className="login-link">
               <p>
-                Already have an account? <button type="button" className="login-button" onClick={() => navigate("/login")}>Login</button>
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  className="login-button"
+                  onClick={() => navigate("/login")}
+                >
+                  Login
+                </button>
               </p>
             </div>
           </form>
@@ -98,6 +145,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
-}
-
