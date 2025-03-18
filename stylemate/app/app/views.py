@@ -272,35 +272,54 @@ def add_saved_outfit(request):
 def get_saved_outfits(request):
     if request.method != 'GET':
         return JsonResponse({'error': 'Only GET method allowed'}, status=405)
-    
+
     user_id = request.GET.get('user_id')
+    
     if user_id:
         try:
             user = User.objects.get(pk=user_id)
+            saved_outfits = SavedOutfit.objects.filter(user=user)
         except User.DoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
-        saved_outfits = SavedOutfit.objects.filter(user=user)
     else:
         saved_outfits = SavedOutfit.objects.all()
     
     data = []
     for saved in saved_outfits:
         outfit = saved.outfit
-        data.append({
+
+        # Fetch clothing items
+        def get_clothing_item(item_id):
+            if item_id:
+                try:
+                    item = ClothingItem.objects.get(pk=item_id)
+                    return {
+                        "item_id": item.item_id,
+                        "item_name": item.item_name,
+                        "image_url": request.build_absolute_uri(item.image_url) if item.image_url else None
+                    }
+                except ClothingItem.DoesNotExist:
+                    return None
+            return None
+
+        outfit_data = {
             'saved_outfit_id': saved.saved_outfit_id,
             'user_id': saved.user.pk,
             'outfit_id': outfit.outfit_id,
             'outfit_name': outfit.outfit_name,
-            'head_accessory_item_id': outfit.head_accessory_item_id,
-            'top_item_id': outfit.top_item_id,
-            'outerwear_item_id': outfit.outerwear_item_id,
-            'bottom_item_id': outfit.bottom_item_id,
-            'footwear_item_id': outfit.footwear_item_id,
             'current_weather': outfit.current_weather,
-        })
+            'items': {
+                "Head Accessory": get_clothing_item(outfit.head_accessory_item_id),
+                "Top": get_clothing_item(outfit.top_item_id),
+                "Outerwear": get_clothing_item(outfit.outerwear_item_id),
+                "Bottom": get_clothing_item(outfit.bottom_item_id),
+                "Footwear": get_clothing_item(outfit.footwear_item_id),
+            }
+        }
+        
+        data.append(outfit_data)
     
     return JsonResponse({'saved_outfits': data}, status=200)
-
 
 
 User = get_user_model()
