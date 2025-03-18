@@ -30,12 +30,24 @@ const OutfitModal = ({ isOpen, onClose, occasion, loading, outfit }) => {
               </tr>
             </thead>
             <tbody>
-              <tr><td>Head Accessory</td><td>{outfit.head_accessory || "None"}</td></tr>
-              <tr><td>Top</td><td>{outfit.top || "None"}</td></tr>
-              <tr><td>Outerwear</td><td>{outfit.outerwear || "None"}</td></tr>
-              <tr><td>Bottom</td><td>{outfit.bottom || "None"}</td></tr>
-              <tr><td>Footwear</td><td>{outfit.footwear || "None"}</td></tr>
-            </tbody>
+            {Object.entries(outfit.outfit).map(([category, details]) => (
+              <tr key={category}>
+                <td>{category}</td>
+                <td>{details.item || "None"}</td>
+                <td>
+                  {details.image ? (
+                    <img
+                      src={details.image}
+                      alt={details.item}
+                      style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                    />
+                  ) : (
+                    "No Image"
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
           </table>
         ) : (
           <p>Failed to load outfit. Please try again.</p>
