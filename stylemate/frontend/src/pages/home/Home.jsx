@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import OutfitModal from "./OutfitModal";
 import "./Home.css";
+import "./OutfitModal.css";
+
+
 
 export default function Home() {
     const navigate = useNavigate();

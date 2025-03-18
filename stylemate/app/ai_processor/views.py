@@ -8,8 +8,10 @@ from .models import OutfitSuggestion
 from closet.models import Closet, ClothingItem
 import json
 from collections import defaultdict
+import re
 
 User = get_user_model()  # Dynamically fetch User model
+
 
 # Initialize Gemini API
 genai.configure(api_key=settings.GEMINI_API_KEY)
@@ -48,7 +50,7 @@ def generate_outfit(request):
             clothing_items = [
                 {
                     "name": item.item.item_name,
-                    "category": item.item.category_id or "Unknown",
+                    "category": str(item.item.category_id) or "Unknown",  # Ensure category is a string
                     "color": item.item.color or "Unknown",
                     "brand": item.item.brand or "Unknown",
                     "image_url": item.item.image_url,
@@ -76,26 +78,82 @@ def generate_outfit(request):
 
         print(f"🔹 Clothing Description for LLM:\n{clothing_description}")
 
+        valid_images = {
+            "Head Accessory": grouped_clothing.get("Head Accessory", [None])[0],
+            "Top": grouped_clothing.get("Top", [None])[0],
+            "Outerwear": grouped_clothing.get("Outerwear", [None])[0],
+            "Bottom": grouped_clothing.get("Bottom", [None])[0],
+            "Footwear": grouped_clothing.get("Footwear", [None])[0],
+        }
+
+        
+
         prompt = f"""
         You are a fashion assistant. The user has the following clothing items:
         {clothing_description}
 
         The user wants an outfit for the following occasion: {occasion}.
 
-        Based on the available clothes, suggest a stylish and appropriate outfit.
+        Select an outfit based on the available clothing. You **must use** the following image paths:
+
+        - Head Accessory: {valid_images['Head Accessory']}
+        - Top: {valid_images['Top']}
+        - Outerwear: {valid_images['Outerwear']}
+        - Bottom: {valid_images['Bottom']}
+        - Footwear: {valid_images['Footwear']}
+
+        If no suitable item exists for a category, return `"None"` as the item and `null` for the image.
+
+        The JSON format should be:
+        {{
+            "Head Accessory": {{"item": "Hat", "image": "{valid_images['Head Accessory']}"}},
+            "Top": {{"item": "Black Tee", "image": "{valid_images['Top']}"}},
+            "Outerwear": {{"item": "None", "image": null}},
+            "Bottom": {{"item": "Jeans", "image": "{valid_images['Bottom']}"}},
+            "Footwear": {{"item": "Airforces", "image": "{valid_images['Footwear']}"}}
+        }}
         """
+
 
         print("🔹 Sending Prompt to LLM...")
         
         # Generate outfit suggestion using Gemini
         try:
-            model = genai.GenerativeModel("gemini-2.0-flash")  # ✅ Correct model instance
-            response = model.generate_content(prompt)  # ✅ Correct API call
+            model = genai.GenerativeModel("gemini-2.0-flash")
+            response = model.generate_content(prompt)
+            
+            print(f"🔹 Raw Response from LLM: {response.text}")
 
-            outfit_suggestion = response.text if response else "No outfit could be generated."
-        except Exception as e:
-            print(f"❌ LLM Error: {e}")
-            return Response({"error": f"LLM request failed: {str(e)}"}, status=500)
+            # Clean up the response to remove unwanted text (like 'json' at the start)
+            # cleaned_response = re.sub(r"^json\s*", "", response.text).strip()
+            cleaned_response = re.sub(r"```(json)?", "", response.text).strip()
+
+            # Now parse the cleaned response
+            # outfit_suggestion = json.loads(cleaned_response)
+
+            # Check if the response is empty or just whitespace
+            if not cleaned_response.strip():
+                print("❌ Error: LLM response is empty")
+                return Response({"error": "LLM returned an empty response."}, status=500)
+
+            try:
+                # Now parse the cleaned response
+                outfit_suggestion = json.loads(cleaned_response)
+            except json.JSONDecodeError as e:
+                print(f"❌ Error: Failed to parse LLM response as JSON: {e}")
+                return Response({"error": "Invalid response format from LLM"}, status=500)
+            
+            # Ensure all suggested items have properly formatted image URLs
+            for category, details in outfit_suggestion.items():
+                if details["image"]:  # If an image exists, ensure it's correctly formatted
+                    outfit_suggestion[category]["image"] = f"/media/closet/{details['image'].split('/')[-1]}"
+
+            print(f"🔹 Final Corrected Outfit Suggestion: {outfit_suggestion}")
+            
+
+        except json.JSONDecodeError as e:
+            print(f"❌ Error: Failed to parse LLM response as JSON: {e}")
+            return Response({"error": "Invalid response format from LLM"}, status=500)
 
         print(f"🔹 Outfit Suggestion from LLM: {outfit_suggestion}")
 
@@ -103,8 +161,8 @@ def generate_outfit(request):
         OutfitSuggestion.objects.create(suggestion=outfit_suggestion)
 
         return Response({
-            "outfit": outfit_suggestion,
-            "clothing_images_by_category": grouped_clothing
+            "outfit": outfit_suggestion,  # Structured JSON with item names & images
+            "clothing_images_by_category": grouped_clothing  # Keep grouped images
         })
 
     except Exception as e:
