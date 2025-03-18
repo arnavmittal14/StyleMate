@@ -41,39 +41,49 @@ def generate_outfit(request):
     if not user_closet_items.exists():
         return Response({"error": "No clothing items found in your closet."}, status=400)
 
+    # ✅ Store category keys as **integers** for consistent lookup
     category_map = defaultdict(list)
     for entry in user_closet_items:
         clothing_item = entry.item
-        category_map[str(clothing_item.category_id)].append({
+        category_key = int(clothing_item.category_id)  # Ensure category key is an integer
+        category_map[category_key].append({
             "item_id": clothing_item.item_id,
             "item_name": clothing_item.item_name,
-            "image_url": request.build_absolute_uri(clothing_item.image_url) if clothing_item.image_url else None,  # ✅ Use absolute URI
+            "image_url": request.build_absolute_uri(clothing_item.image_url) if clothing_item.image_url else None,
         })
 
-    print(f"🔹 Grouped Clothing Items by Category: {json.dumps(category_map, indent=2)}")
+    formatted_clothing_options = {
+        1: category_map.get(1, []),  # Head Accessory
+        2: category_map.get(2, []),  # Top
+        3: category_map.get(3, []),  # Outerwear
+        4: category_map.get(4, []),  # Bottom
+        5: category_map.get(5, []),  # Footwear
+    }
 
-    # Prepare input for LLM
-    clothing_description = "\n".join(
-        [f"{entry.item.item_name} ({entry.item.color} Category {entry.item.category_id} by {entry.item.brand})"
-         for entry in user_closet_items]
-    )
+    print(f"🔹 Available Clothing Choices for LLM: {json.dumps(formatted_clothing_options, indent=2)}")
 
-    print(f"🔹 Clothing Description for LLM:\n{clothing_description}")
-
+    # ✅ Ensure LLM only selects from available closet items
     prompt = f"""
-    You are a fashion assistant. The user has the following clothing items:
-    {clothing_description}
+    You are a personal stylist. The user has these clothing options:
 
-    The user wants an outfit for the following occasion: {occasion}.
+    {json.dumps(formatted_clothing_options, indent=2)}
 
-    Return ONLY JSON with the format:
+    The user wants an outfit for this occasion: **{occasion}**.
+
+    🚨 **Rules:**
+    - Pick ONLY from the given clothing items.
+    - Do NOT create new items.
+    - If no suitable item exists for a category, return `"None"`.
+    - Always return **ONLY JSON**. No extra words.
+
+    📌 **JSON Response Format:**
     ```json
     {{
-        "Head Accessory": {{"item": "Hat"}},
-        "Top": {{"item": "Black Tee"}},
-        "Outerwear": {{"item": "Leather Jacket"}},
-        "Bottom": {{"item": "Jeans"}},
-        "Footwear": {{"item": "Airforces"}}
+        "1": {{"item_id": 123, "item_name": "Selected Hat"}}, 
+        "2": {{"item_id": 456, "item_name": "Selected Shirt"}},
+        "3": {{"item_id": 789, "item_name": "Selected Jacket"}},
+        "4": {{"item_id": 321, "item_name": "Selected Pants"}},
+        "5": {{"item_id": 654, "item_name": "Selected Shoes"}}
     }}
     ```
     """
@@ -96,21 +106,25 @@ def generate_outfit(request):
 
         outfit_suggestion = json.loads(cleaned_response)
 
-        # ✅ Find Matching Clothing Items in Closet
+        # ✅ Fix: Ensure correct integer category lookup
         final_outfit = {}
         for category, details in outfit_suggestion.items():
-            if details is None:
+            category = int(category)  # Convert key to integer for lookup
+            if not details or "item_id" not in details:
                 final_outfit[category] = {"item": "None", "image": None, "item_id": None}
                 continue
 
-            item_name = details.get("item", "None")
-            matched_item = next((entry.item for entry in user_closet_items if entry.item.item_name.lower() == item_name.lower()), None)
+            item_id = details["item_id"]
+            matched_item = next(
+                (item for item in category_map.get(category, []) if item["item_id"] == item_id),
+                None
+            )
 
             if matched_item:
                 final_outfit[category] = {
-                    "item": matched_item.item_name,
-                    "image": request.build_absolute_uri(matched_item.image_url) if matched_item.image_url else None,  # ✅ Ensure correct absolute URI
-                    "item_id": matched_item.item_id
+                    "item": matched_item["item_name"],
+                    "image": matched_item["image_url"],  # ✅ Ensure correct image path
+                    "item_id": matched_item["item_id"]
                 }
             else:
                 final_outfit[category] = {"item": "None", "image": None, "item_id": None}
@@ -118,6 +132,7 @@ def generate_outfit(request):
         print(f"🔹 Final Corrected Outfit Suggestion: {final_outfit}")
 
     except Exception as e:
+        print(f"❌ Error: {e}")
         return Response({"error": f"LLM request failed: {str(e)}"}, status=500)
 
     # ✅ Save suggestion in DB
@@ -126,5 +141,5 @@ def generate_outfit(request):
     return Response({
         "outfit": final_outfit,
         "user_id": user_id,
-        "outfit_name": f"Generated Outfit ({occasion})"
+        "outfit_name": f"{occasion} Outfit"
     })
