@@ -162,8 +162,8 @@ export default function ClosetPage() {
     <div className="closet-container">
       {/* Filters Section */}
 
-      <div className="main-content">
-        <h2 className="main-heading">Your Personal AI Stylist</h2>
+      <div className="closet-content">
+        <h2 className="closet-heading">Your Personal AI Stylist</h2>
       </div>
 
       <div className="filters-container">
