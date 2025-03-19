@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./NewItemModal.css";
 
 export default function NewItemModal({ onClose, onAddItem, initialItem }) {
@@ -23,14 +23,10 @@ export default function NewItemModal({ onClose, onAddItem, initialItem }) {
   // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!imageFile || !name.trim()) {
-      alert("Please upload an image and enter a name.");
-      return;
-    }
 
     const newItem = {
-      photo: imageFile, // Use actual file object for FormData compatibility
-      item_name: name,
+      ...(imageFile && { photo: imageFile }), // Use actual file object for FormData compatibility
+      ...(name && { item_name: name }),
       category_id: categoryId,
     };
 
