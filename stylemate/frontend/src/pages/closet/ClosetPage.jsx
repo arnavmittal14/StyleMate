@@ -99,30 +99,38 @@ export default function ClosetPage() {
 
   // Edit and delete functions remain similar
   const handleEditItem = (updatedItem) => {
-    const updatedItems = clothingItems.map((item, index) =>
-      index === itemToEdit ? updatedItem : item
-    );
-    setClothingItems(updatedItems);
-    setIsEditModalOpen(false);
+    const existingItem = clothingItems[itemToEdit];
+    const newItem = {
+      ...existingItem,
+      ...updatedItem
+    }
+
+    // Delete item
+    handleDeleteItem(itemToEdit);
+
+    // Add it back with the new stuff
+    handleAddItem(newItem);
   };
 
-  const handleDeleteItem = () => {
+  const handleDeleteItem = (optionalItem = -1) => {
     const userId = localStorage.getItem("user_id");
     if (!userId) {
       setError("User not logged in");
       return;
     }
+
+    const itemForDeletion = optionalItem === -1 ? itemToDelete : optionalItem;
+
     fetch(`http://localhost:8000/api/delete_from_closet/?user_id=${userId}`, {
       method: "DELETE",
       credentials: "include",
       headers: { Accept: "application/json" },
-      body: JSON.stringify(clothingItems[itemToDelete])
+      body: JSON.stringify(clothingItems[itemForDeletion])
     })
       .then((res) => res.json())
       .then((data) => {
         if (data.message) {
-          const updatedItems = clothingItems.filter((_, i) => i !== itemToDelete);
-          setClothingItems(updatedItems);
+          fetchClosetItems()
         }
       })
       .catch((err) => {
