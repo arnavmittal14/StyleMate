@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAuth } from "../login/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../login/AuthContext";
 import "./SignupPage.css";
 
 export default function SignupPage() {
@@ -11,13 +11,13 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState("Male");
   const [error, setError] = useState("");
 
   const handleSignUp = (e) => {
     e.preventDefault();
     setError("");
-    
+
     if (password !== confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -35,7 +35,6 @@ export default function SignupPage() {
 
     console.log("Payload to register:", payload); // Debug output
 
-
     fetch("http://localhost:8000/api/register/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -46,8 +45,7 @@ export default function SignupPage() {
         if (data.message) {
           // Registration successful.
           // Option 1: Automatically log the user in
-          login({ email }); // if your login function supports auto-login with email, etc.
-          navigate("/"); // redirect to home page
+          navigate("/login");
         } else if (data.error) {
           setError(data.error);
         }

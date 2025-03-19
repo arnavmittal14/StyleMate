@@ -1,35 +1,34 @@
-import os
+import base64
 import json
+import os
 from io import BytesIO
 
-from django.http import HttpResponse, JsonResponse, Http404
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate, login as auth_login
-from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.core.files.storage import FileSystemStorage
-import base64
+# Import models from your apps
 from closet.models import Closet, ClothingItem
-
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import login as auth_login
+from django.core.files.base import ContentFile
+from django.core.files.storage import FileSystemStorage, default_storage
+from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
+                         JsonResponse)
+from django.views.decorators.csrf import csrf_exempt
+from PIL import Image
 # Image processing imports
 from rembg import remove
-from PIL import Image
-
-# Import models from your apps
-from closet.models import ClothingItem, Closet
-from savedoutfit.models import SavedOutfit, OutfitSet
+from savedoutfit.models import OutfitSet, SavedOutfit
 
 User = get_user_model()
+
 
 @csrf_exempt
 def homepage(request):
     return JsonResponse({'message': 'Hello world! This is Home'})
 
+
 @csrf_exempt
 def about(request):
     return JsonResponse({'message': 'This is about'})
+
 
 @csrf_exempt
 def api_login(request):
@@ -38,21 +37,23 @@ def api_login(request):
             data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
-        
+
         # Use email (instead of username) for login.
         email = data.get('email')
         password = data.get('password')
         if not email or not password:
             return JsonResponse({'error': 'Email and password are required'}, status=400)
-        
+
         user = authenticate(email=email, password=password)
         if user is not None:
             auth_login(request, user)
+            request.session.save()
             return JsonResponse({'message': 'Login successful'}, status=200)
         else:
             return JsonResponse({'error': 'Invalid credentials'}, status=401)
     else:
         return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+
 
 @csrf_exempt
 def api_register(request):
@@ -61,7 +62,7 @@ def api_register(request):
             data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
-        
+
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         email = data.get('email')
@@ -70,14 +71,14 @@ def api_register(request):
         profile_photo_url = data.get('profile_photo_url')  # Optional
         gender = data.get('gender')  # Required
         gender_other = data.get('gender_other')
-        
+
         # Ensure required fields are provided.
         if not all([first_name, last_name, email, password1, password2, gender]):
             return JsonResponse({'error': 'First name, last name, email, password, and gender are required'}, status=400)
-        
+
         if password1 != password2:
             return JsonResponse({'error': 'Passwords do not match'}, status=400)
-        
+
         try:
             user = User.objects.create_user(
                 first_name=first_name,
@@ -88,13 +89,16 @@ def api_register(request):
                 gender=gender,
                 gender_other=gender_other
             )
+
             auth_login(request, user)
+            request.session.save()
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
-        
-        return JsonResponse({'message': 'User created successfully'}, status=201)
+
+        return JsonResponse({'message': 'User created successfully', 'userId': user.user_id}, status=201)
     else:
         return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+
 
 @csrf_exempt
 def add_to_closet(request):
@@ -152,8 +156,9 @@ def add_to_closet(request):
 
             # Generate unique filename
             filename = f"{item_name.replace(' ', '_').lower()}_{user_id}.png"
-            file_path = os.path.join("closet", filename)  # Store under media/closet/
-            
+            # Store under media/closet/
+            file_path = os.path.join("closet", filename)
+
             # Save the processed image
             with default_storage.open(file_path, "wb") as out_file:
                 out_file.write(processed_bytes)
@@ -186,7 +191,8 @@ def add_to_closet(request):
         return JsonResponse({"error": "User not found"}, status=404)
 
     # Link ClothingItem to User's Closet
-    closet_entry, _ = Closet.objects.get_or_create(user=user, item=clothing_item)
+    closet_entry, _ = Closet.objects.get_or_create(
+        user=user, item=clothing_item)
 
     return JsonResponse({
         "message": "Clothing item added to closet",
@@ -200,22 +206,22 @@ def add_to_closet(request):
 def add_saved_outfit(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method allowed'}, status=405)
-    
+
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    
+
     user_id = data.get('user_id')
     outfit_name = data.get('outfit_name', 'My Outfit')
     if not user_id:
         return JsonResponse({'error': 'Missing required field: user_id'}, status=400)
-    
+
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
-    
+
     def get_clothing_item(item_key):
         item_id = data.get(item_key)
         if item_id:
@@ -231,7 +237,7 @@ def add_saved_outfit(request):
     bottom_item = get_clothing_item('bottom_item_id')
     footwear_item = get_clothing_item('footwear_item_id')
     current_weather = data.get('current_weather')
-    
+
     existing_outfit = OutfitSet.objects.filter(
         user=user,
         outfit_name=outfit_name,
@@ -242,13 +248,13 @@ def add_saved_outfit(request):
         footwear_item=footwear_item,
         current_weather=current_weather
     ).first()
-    
+
     if existing_outfit:
         return JsonResponse({
             'message': 'Duplicate outfit found',
             'saved_outfit_id': existing_outfit.outfit_id
         }, status=200)
-    
+
     outfit_set = OutfitSet.objects.create(
         user=user,
         outfit_name=outfit_name,
@@ -259,14 +265,15 @@ def add_saved_outfit(request):
         footwear_item=footwear_item,
         current_weather=current_weather
     )
-    
+
     saved_outfit = SavedOutfit.objects.create(user=user, outfit=outfit_set)
-    
+
     return JsonResponse({
         'message': 'Saved outfit created successfully',
         'saved_outfit_id': saved_outfit.saved_outfit_id,
         'outfit_id': outfit_set.outfit_id
     }, status=201)
+
 
 @csrf_exempt
 def get_saved_outfits(request):
@@ -274,7 +281,7 @@ def get_saved_outfits(request):
         return JsonResponse({'error': 'Only GET method allowed'}, status=405)
 
     user_id = request.GET.get('user_id')
-    
+
     if user_id:
         try:
             user = User.objects.get(pk=user_id)
@@ -283,7 +290,7 @@ def get_saved_outfits(request):
             return JsonResponse({'error': 'User not found'}, status=404)
     else:
         saved_outfits = SavedOutfit.objects.all()
-    
+
     data = []
     for saved in saved_outfits:
         outfit = saved.outfit
@@ -316,41 +323,42 @@ def get_saved_outfits(request):
                 "Footwear": get_clothing_item(outfit.footwear_item_id),
             }
         }
-        
+
         data.append(outfit_data)
-    
+
     return JsonResponse({'saved_outfits': data}, status=200)
 
 
 User = get_user_model()
 
+
 @csrf_exempt
 def get_closet(request):
     if request.method != 'GET':
         return JsonResponse({'error': 'Only GET method allowed'}, status=405)
-    
+
     user_id = request.GET.get('user_id')
     if not user_id:
         return JsonResponse({'error': 'user_id parameter required'}, status=400)
-    
+
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
-    
+
     closet_entries = Closet.objects.filter(user=user)
     data = []
-    
+
     for entry in closet_entries:
         item = entry.item
-        
+
         # Check if image_url contains binary data
         if isinstance(item.image_url, bytes):
             image_base64 = base64.b64encode(item.image_url).decode('utf-8')
             image_url = f"data:image/png;base64,{image_base64}"
         else:
             image_url = item.image_url  # If it's a URL, use it directly
-        
+
         data.append({
             'closet_id': entry.closet_id,
             'item_id': item.item_id,
@@ -362,15 +370,41 @@ def get_closet(request):
             "image_url": request.build_absolute_uri(entry.item.image_url) if entry.item.image_url else None,
             'created_at': item.created_at,
         })
-    
+
     return JsonResponse({'closet': data}, status=200)
+
+
+@csrf_exempt
+def delete_from_closet(request):
+    if request.method != 'DELETE':
+        return JsonResponse({'error': 'Only DELETE method allowed'}, status=405)
+
+    user_id = request.GET.get('user_id', None)
+    if not user_id:
+        return JsonResponse({'error': 'user_id parameter required'}, status=400)
+
+    body = json.loads(request.body)
+    item_id = body.get('item_id')
+    closet_id = body.get('closet_id')
+
+    try:
+        item = ClothingItem.objects.get(pk=item_id)
+        try:
+            closet_entry = Closet.objects.get(closet_id=closet_id, item=item)
+            closet_entry.delete()
+            item.delete()
+            return JsonResponse({'message': f'Item {item_id} has been deleted successfully'}, status=200)
+        except Closet.DoesNotExist:
+            return JsonResponse({'error': 'Closet item not found'}, status=404)
+    except ClothingItem.DoesNotExist:
+        return JsonResponse({'error': 'Item not found'}, status=404)
 
 
 @csrf_exempt
 def get_users(request):
     if request.method != 'GET':
         return JsonResponse({'error': 'Only GET method allowed'}, status=405)
-    
+
     user_id = request.GET.get('user_id')
     if user_id:
         try:
@@ -379,7 +413,7 @@ def get_users(request):
             return JsonResponse({'error': 'User not found'}, status=404)
     else:
         users = User.objects.all()
-    
+
     data = []
     for user in users:
         data.append({
@@ -392,8 +426,9 @@ def get_users(request):
             'gender_other': user.gender_other,
             'last_login': user.last_login,
         })
-    
+
     return JsonResponse({'users': data}, status=200)
+
 
 @csrf_exempt
 def upload_and_process_photo(request):
@@ -436,18 +471,19 @@ def upload_and_process_photo(request):
         'message': 'Photo processed and stored in DB',
     })
 
+
 @csrf_exempt
 def current_user(request):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'User not authenticated'}, status=401)
-    
+
     user = request.user
     # If the user has binary data for the profile photo, construct a URL to serve it.
     if hasattr(user, "profile_photo_url") and user.profile_photo_url:
         photo_url = f"http://localhost:8000/api/profile_photo/{user.user_id}/"
     else:
         photo_url = "/profile.png"
-    
+
     data = {
         'user_id': user.user_id,
         'first_name': user.first_name,
@@ -463,16 +499,16 @@ def current_user(request):
 def guest_login(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method allowed'}, status=405)
-    
+
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    
+
     gender = data.get('gender')
     if not gender:
         return JsonResponse({'error': 'Gender is required'}, status=400)
-    
+
     # Choose a guest account based on the provided gender.
     # Adjust the email and password to match your guest accounts.
     if gender.lower() == 'male':
@@ -491,34 +527,34 @@ def guest_login(request):
         return JsonResponse({'message': 'Guest login successful', 'user_id': user.user_id})
     else:
         return JsonResponse({'error': 'Guest login failed'}, status=401)
-    
+
+
 def serve_profile_photo(request, user_id):
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         raise Http404("User not found")
-    
+
     if not hasattr(user, "profile_photo_url") or not user.profile_photo_url:
         raise Http404("No profile photo")
-    
+
     return HttpResponse(user.profile_photo_url, content_type="image/png")
+
 
 def serve_clothing_item(request, item_id):
     try:
         item = ClothingItem.objects.get(pk=item_id)
     except ClothingItem.DoesNotExist:
         raise Http404("Clothing item not found")
-    
+
     if not item.image_url:
         raise Http404("No image available")
-    
+
     # Convert to bytes in case it is a memoryview
     image_data = bytes(item.image_url)
     response = HttpResponse(image_data, content_type="image/png")
     response["Content-Length"] = len(image_data)
     return response
-
-
 
 
 @csrf_exempt
