@@ -14,11 +14,11 @@
 .closet-content {
   text-align: center;
   margin-top: 3rem; 
-  width: 100%; 
+  width: 800px; 
   padding: 20px;
   border-radius: 10px;
   background: #f9f9f9; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(134, 59, 59, 0.1);
   margin-bottom: 2rem;
 }
 
