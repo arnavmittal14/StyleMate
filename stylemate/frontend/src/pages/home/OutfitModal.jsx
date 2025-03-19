@@ -4,14 +4,47 @@ import "./OutfitModal.css";
 const OutfitModal = ({ isOpen, onClose, occasion, loading, outfit }) => {
   if (!isOpen) return null; // Prevent rendering if modal is closed
 
-  const saveToFavorites = () => {
+  const saveToFavorites = async () => {
     if (!outfit) return;
 
-    const savedOutfits = JSON.parse(localStorage.getItem("favorites")) || [];
-    const newOutfit = { occasion, ...outfit };
-    localStorage.setItem("favorites", JSON.stringify([...savedOutfits, newOutfit]));
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      alert("User not logged in!");
+      return;
+    }
 
-    alert("Outfit saved to favorites!");
+    // Prepare the payload for saving outfit
+    const outfitData = {
+      user_id: userId,
+      outfit_name: `${occasion} Outfit`, // Dynamic name
+      head_accessory_item_id: outfit.outfit[1]?.item_id || null,
+      top_item_id: outfit.outfit[2]?.item_id || null,
+      outerwear_item_id: outfit.outfit[3]?.item_id || null,
+      bottom_item_id: outfit.outfit[4]?.item_id || null,
+      footwear_item_id: outfit.outfit[5]?.item_id || null,
+      current_weather: "Unknown", // Modify as needed
+    };
+
+    try {
+      const response = await fetch("http://localhost:8000/api/add_saved_outfit/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(outfitData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Outfit saved to favorites!");
+      } else {
+        alert(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Failed to save outfit:", error);
+      alert("Failed to save outfit. Try again.");
+    }
   };
 
   return (
@@ -27,14 +60,27 @@ const OutfitModal = ({ isOpen, onClose, occasion, loading, outfit }) => {
               <tr>
                 <th>Category</th>
                 <th>Item</th>
+                <th>Image</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td>Head Accessory</td><td>{outfit.head_accessory || "None"}</td></tr>
-              <tr><td>Top</td><td>{outfit.top || "None"}</td></tr>
-              <tr><td>Outerwear</td><td>{outfit.outerwear || "None"}</td></tr>
-              <tr><td>Bottom</td><td>{outfit.bottom || "None"}</td></tr>
-              <tr><td>Footwear</td><td>{outfit.footwear || "None"}</td></tr>
+              {Object.entries(outfit.outfit).map(([category, details]) => (
+                <tr key={category}>
+                  <td>{category}</td>
+                  <td>{details.item || "None"}</td>
+                  <td>
+                    {details.image ? (
+                      <img
+                        src={details.image}
+                        alt={details.item}
+                        style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                      />
+                    ) : (
+                      "No Image"
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         ) : (
