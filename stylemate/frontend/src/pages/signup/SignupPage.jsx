@@ -45,8 +45,7 @@ export default function SignupPage() {
         if (data.message) {
           // Registration successful.
           // Option 1: Automatically log the user in
-          login({ email });  // if your login function supports auto-login with email, etc.
-          navigate("/");
+          navigate("/login");
         } else if (data.error) {
           setError(data.error);
         }
