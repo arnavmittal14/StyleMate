@@ -195,9 +195,6 @@ export default function ClosetPage() {
             <img src={item.image_url} alt={item.item_name} className="items-image" />
             <p className="item-name">{item.item_name}</p>
             <div className="action-buttons">
-              <button className="edit-button" onClick={() => openEditModal(index)}>
-                ✏️
-              </button>
               <button className="delete-button" onClick={() => openDeleteModal(index)}>
                 🗑️
               </button>
@@ -214,14 +211,14 @@ export default function ClosetPage() {
         />
       )}
 
-      {/* Edit Item Modal */}
+      {/* Edit Item Modal
       {isEditModalOpen && (
         <NewItemModal
           onClose={() => setIsEditModalOpen(false)}
           onAddItem={handleEditItem}
           initialItem={clothingItems[itemToEdit]}
         />
-      )}
+      )} */}
 
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
