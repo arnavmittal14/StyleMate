@@ -131,7 +131,8 @@ def add_to_closet(request):
     brand = data.get("brand")
 
     # Save Image if provided
-    image_url = None  # Default to None if no image is uploaded
+    # Default to None if no image is uploaded
+    image_url = data.get("image_url", None)
 
     if photo:
         try:
