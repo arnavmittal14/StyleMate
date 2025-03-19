@@ -163,7 +163,7 @@ export default function ClosetPage() {
       {/* Filters Section */}
 
       <div className="closet-content">
-        <h2 className="closet-heading">Your Personal AI Stylist</h2>
+        <h2 className="closet-heading">Closet</h2>
       </div>
 
       <div className="filters-container">
