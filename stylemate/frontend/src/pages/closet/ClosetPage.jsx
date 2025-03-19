@@ -223,7 +223,7 @@ export default function ClosetPage() {
         <div className="delete-modal">
           <div className="delete-modal-content">
             <p>Are you sure you want to delete this item?</p>
-            <button onClick={handleDeleteItem}>Yes</button>
+            <button onClick={() => handleDeleteItem()}>Yes</button>
             <button onClick={() => setIsDeleteModalOpen(false)}>No</button>
           </div>
         </div>
