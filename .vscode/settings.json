@@ -11,7 +11,8 @@
             "driver": "MySQL",
             "name": "stylemate_database",
             "database": "stylemate_database",
-            "username": "root"
+            "username": "root",
+            "password": "Password"
 
         }
     ]

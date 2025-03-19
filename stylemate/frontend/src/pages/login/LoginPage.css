@@ -1,4 +1,4 @@
-/* Main container */
+
 .login-container {
   display: flex;
   justify-content: center;
@@ -119,7 +119,7 @@ button {
   background: #bba297;
 }
 
-/* Popup Overlay */
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -134,7 +134,7 @@ button {
   transition: opacity 0.3s ease;
 }
 
-/* Popup Card */
+
 .popup-card {
   background: white;
   border-radius: 10px;
@@ -145,14 +145,14 @@ button {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Popup Title */
+
 .popup-card h3 {
   font-size: 1.5rem;
   margin-bottom: 20px;
   color: #646363;
 }
 
-/* Closet Selection Buttons */
+
 .closet-selection button {
   background: #dcbfb2;
   color: white;
@@ -175,13 +175,13 @@ button {
   background: #bba297;
 }
 
-/* Confirm and Cancel Buttons */
+
 .conf-cancel {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%; /* Ensures full width usage */
-  gap: 10px; /* Provides spacing between buttons */
+  width: 100%;
+  gap: 10px;
   margin-top: 10px;
 }
 

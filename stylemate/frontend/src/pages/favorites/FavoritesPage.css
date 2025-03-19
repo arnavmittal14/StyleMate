@@ -1,46 +1,46 @@
-/* Main container */
+
 .favorites-page {
     min-height: 100vh;
   }
   
-  /* Page header section */
+ 
   .page-header {
     text-align: center;
-    margin-top: 2.5rem; /* mt-10 */
+    margin-top: 2.5rem;
   }
   
   .page-title {
-    font-size: 2.5rem; /* text-3xl */
-    font-weight:700; /* font-bold */
-    color: #646363; /* text-gray-800 */
-    font-family: "Dancing Script", cursive; /* Smoother cursive font */
+    font-size: 2.5rem;
+    font-weight:700;
+    color: #646363;
+    font-family: "Dancing Script", cursive;
   }
   
   .page-description {
-    color: #4b5563; /* text-gray-600 */
-    margin-top: 0.5rem; /* mt-2 */
+    color: #4b5563;
+    margin-top: 0.5rem;
   }
   
-  /* Carousel section */
+ 
   .carousel-container {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 2rem; /* mt-8 */
+    margin-top: 2rem;
   }
   
-  /* Carousel navigation buttons */
+ 
   .carousel-button {
     position: absolute;
     background-color: white;
-    padding: 0.5rem; /* p-2 */
-    border-radius: 9999px; /* rounded-full */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+    padding: 0.5rem;
+    border-radius: 9999px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   
   .carousel-button:hover {
-    background-color: #e5e7eb; /* hover:bg-gray-200 */
+    background-color: #e5e7eb;
   }
   
   .carousel-button-left {
@@ -55,30 +55,30 @@
     margin-right: 4rem; 
   }
   
-  /* Carousel items container */
+ 
   .carousel-items {
     display: flex;
-    gap: 1.5rem; /* space-x-6 */
+    gap: 1.5rem;
     overflow-x: auto;
-    padding: 1rem 1.5rem; /* px-6 py-4 */
+    padding: 1rem 1.5rem;
   }
   
-  /* Hide scrollbar for cleaner look (optional) */
+ 
   .carousel-items::-webkit-scrollbar {
     display: none;
   }
   
   .carousel-items {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
   }
   
-  /* Pagination dots */
+ 
   .pagination-dots {
     display: flex;
     justify-content: center;
-    margin-top: 1rem; /* mt-4 */
-    gap: 0.5rem; /* space-x-2 */
+    margin-top: 1rem;
+    gap: 0.5rem;
   }
   
  
@@ -93,16 +93,16 @@
   }
 
   .pagination-dot.active {
-    background-color: #ccafa3; /* Highlight active dot with orange */
+    background-color: #ccafa3;
   }
 
   .outfit-title {
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem; /* text-3xl */
-    font-weight: 700; /* font-bold */
-    color: #646363; /* text-gray-800 */
-    font-family: "Dancing Script", cursive; /* Smoother cursive font */
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #646363;
+    font-family: "Dancing Script", cursive;
 
   }
 
@@ -115,7 +115,7 @@
   gap: 20px;
   margin-top: 50px;
   position: relative;
-  height: 350px; /* Adjust as per card height */
+  height: 350px;
 }
 
 .favorites-container {
@@ -124,4 +124,52 @@
   justify-content: center;
   padding: 20px;
   gap: 20px;
+}
+
+
+
+
+@media (max-width: 768px) {
+  .filters-container {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      justify-content: flex-start;
+      padding-bottom: 5px;
+      max-width: 100%;
+      scrollbar-width: none;
+  }
+
+ 
+  .filters-container::-webkit-scrollbar {
+      display: none;
+  }
+
+ 
+  .filter-button {
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+      min-width: 100px;
+      max-width: 130px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      text-align: center;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .filters-container {
+      overflow-x: auto;
+      justify-content: flex-start;
+      padding-bottom: 5px;
+      display: flex;
+  }
+
+  .filter-button {
+      font-size: 0.85rem;
+      padding: 0.3rem 0.7rem;
+      min-width: 90px;
+      max-width: 120px;
+  }
 }

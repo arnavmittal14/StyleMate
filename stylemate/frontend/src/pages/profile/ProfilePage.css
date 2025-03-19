@@ -1,11 +1,11 @@
-/* General Page Styling */
+
 .profile-page {
     display: flex;
     justify-content: center;
     align-items: center;
   }
   
-  /* Profile Container */
+ 
   .profile-container {
     max-width: 500px;
     background: white;
@@ -15,7 +15,7 @@
     border-radius: 16px;
   }
   
-  /* Profile Header */
+ 
   .profile-header {
     display: flex;
     flex-direction: column;
@@ -34,7 +34,7 @@
     color: #666;
   }
   
-  /* Profile Image */
+ 
   .profile-image-container {
     position: relative;
     width: 96px;
@@ -66,7 +66,7 @@
     background: #ccafa3;
   }
   
-  /* Form Styling */
+ 
   .profile-form {
     margin-top: 24px;
   }
@@ -102,7 +102,7 @@
     box-shadow: 0 0 4px #ccafa3;
   }
   
-  /* Gender Selection */
+ 
   .gender-selection {
     margin-top: 16px;
   }
@@ -134,7 +134,7 @@
     color: white;
   }
   
-  /* Save Button */
+ 
   .save-button-container {
     margin-top: 24px;
     display: flex;
