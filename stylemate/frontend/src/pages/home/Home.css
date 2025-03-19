@@ -84,6 +84,7 @@
     border: none;
     width: 40%;
     min-width: 100px;
+    height: 40px;
 }
 
 .generate-button:hover {
@@ -97,8 +98,8 @@
     padding: 0.5rem;
     border-radius: 0.5rem;
     color: rgb(122, 121, 121);
-    width: 90%;
-    max-width: 500px;
+    width: 96%;
+    margin-right:50px;
 }
 
 
