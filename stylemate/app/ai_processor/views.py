@@ -41,7 +41,7 @@ def generate_outfit(request):
     if not user_closet_items.exists():
         return Response({"error": "No clothing items found in your closet."}, status=400)
 
-    # ✅ Store category keys as **integers** for consistent lookup
+    # Store category keys as **integers** for consistent lookup
     category_map = defaultdict(list)
     for entry in user_closet_items:
         clothing_item = entry.item

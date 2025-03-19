@@ -29,12 +29,16 @@ const FavoritesPage = () => {
 
   return (
     <div className="favorites-container">
-      <h2>Saved Outfits</h2>
+      <div className="fav-content">
+        <h2 className="fav-heading">Your Favorites</h2>
+      </div>
 
       {error ? (
         <p className="error-message">{error}</p>
       ) : favoriteOutfits.length === 0 ? (
-        <p className="no-outfits-message">No saved outfits found.</p>
+        <div className="no-outfits-container">
+          <p className="no-outfits-message">No saved outfits found.</p>
+        </div>
       ) : (
         favoriteOutfits.map((outfit) => (
           <FavoriteItem 

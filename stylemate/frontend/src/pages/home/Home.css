@@ -13,9 +13,9 @@
 
 .main-content {
     text-align: center;
-    margin-top: 3rem; 
+    margin-top: 10px; 
     width: 100%; 
-    padding: 20px;
+    padding: 5px;
     border-radius: 10px;
     background: #f9f9f9; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -26,7 +26,8 @@
     font-weight: 800;
     color: #646363;
     font-family: "Dancing Script", cursive;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 
