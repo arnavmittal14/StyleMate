@@ -13,13 +13,13 @@
 
 .closet-content {
   text-align: center;
-  margin-top: 3rem; 
   width: 800px; 
-  padding: 20px;
+  margin-top: 10px;
+  padding: 5px;
   border-radius: 10px;
   background: #f9f9f9; 
   box-shadow: 0 4px 8px rgba(134, 59, 59, 0.1);
-  margin-bottom: 2rem;
+  margin-bottom: 20px;  
 }
 
 .closet-heading {
@@ -27,8 +27,13 @@
   font-weight: 800;
   color: #646363;
   font-family: "Dancing Script", cursive;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
+
+
+
+
 
 .filter-button {
   background-color: #dfd0c9;
