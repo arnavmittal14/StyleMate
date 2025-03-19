@@ -12,6 +12,7 @@
             "name": "stylemate_database",
             "database": "stylemate_database",
             "username": "root"
+
         }
     ]
 }
