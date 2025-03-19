@@ -6,10 +6,8 @@ export default function ClosetPage() {
   const [clothingItems, setClothingItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All Items");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const [itemToEdit, setItemToEdit] = useState(null);
   const [error, setError] = useState("");
 
   // Mapping from category_id to category name
@@ -97,21 +95,6 @@ export default function ClosetPage() {
       });
   };
 
-  // Edit and delete functions remain similar
-  const handleEditItem = (updatedItem) => {
-    const existingItem = clothingItems[itemToEdit];
-    const newItem = {
-      ...existingItem,
-      ...updatedItem
-    }
-
-    // Delete item
-    handleDeleteItem(itemToEdit);
-
-    // Add it back with the new stuff
-    handleAddItem(newItem);
-  };
-
   const handleDeleteItem = (optionalItem = -1) => {
     const userId = localStorage.getItem("user_id");
     if (!userId) {
@@ -146,10 +129,6 @@ export default function ClosetPage() {
     setIsDeleteModalOpen(true);
   };
 
-  const openEditModal = (index) => {
-    setItemToEdit(index);
-    setIsEditModalOpen(true);
-  };
 
   const filteredItems =
     selectedCategory === "All Items"
