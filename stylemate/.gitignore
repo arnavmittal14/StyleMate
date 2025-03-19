@@ -27,3 +27,4 @@ __pycache__/*
 venv/*
 
 app/media/closet/
+app/app/settings.py
