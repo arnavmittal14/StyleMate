@@ -12,7 +12,6 @@
             "name": "StyleMateDB",
             "database": "stylemate_database",
             "username": "root",
-            "password": "Password"
         }
     ]
 }
