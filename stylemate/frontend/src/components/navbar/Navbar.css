@@ -66,6 +66,7 @@ body {
 }
 
 .logout-button:hover {
+    margin-left: 15px;
     background-color: #bba297;; /* hover:bg-purple-700 */
 }
 

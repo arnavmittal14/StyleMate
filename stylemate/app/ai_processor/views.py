@@ -3,98 +3,143 @@ import google.generativeai as genai
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.contrib.auth import get_user_model
 from .models import OutfitSuggestion
-from closet.models import Closet, ClothingItem, Subcategories  # Ensure correct DB reference
-import base64
+from closet.models import Closet, ClothingItem
+from savedoutfit.models import OutfitSet, SavedOutfit
+import json
 from collections import defaultdict
+import re
+
+User = get_user_model()
 
 # Initialize Gemini API
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
 @api_view(["POST"])
 def generate_outfit(request):
-    """
-    Suggests an outfit based on the occasion:
-    - If user is authenticated, retrieve clothing from the database (Closet table).
-    - If user is a guest, require temporary clothing upload (not stored).
-    - Groups clothing items by category before returning the response.
-    """
-    user = request.user if request.user.is_authenticated else None
+    print("🔹 Incoming Request Data:", request.data)
+
     data = request.data
     occasion = data.get("occasion", "").strip()
-    guest_clothing = data.get("guest_clothing", [])
+    user_id = data.get("user_id")
 
     if not occasion:
-        return Response({"error": "Please provide an occasion to generate an outfit."}, status=400)
+        return Response({"error": "Please provide an occasion."}, status=400)
+    if not user_id:
+        return Response({"error": "User ID is required."}, status=400)
 
-    clothing_items = []
+    # Fetch user
+    try:
+        user = User.objects.get(user_id=user_id)
+        print(f"🔹 Found User: {user.email}")
+    except User.DoesNotExist:
+        return Response({"error": "User not found."}, status=404)
 
-    if user:
-        # Authenticated user: Fetch clothing from database
-        user_closet_items = Closet.objects.filter(user_id=user.id).select_related("item")
+    # Fetch user's closet items
+    user_closet_items = Closet.objects.filter(user_id=user.user_id).select_related("item")
+    if not user_closet_items.exists():
+        return Response({"error": "No clothing items found in your closet."}, status=400)
 
-        if user_closet_items.exists():
-            clothing_items = [
-                {
-                    "name": item.item.item_name,
-                    "category": item.item.subcategory.subcategory_name if item.item.subcategory else "Unknown",
-                    "color": item.item.color or "Unknown",
-                    "brand": item.item.brand or "Unknown",
-                    "image_url": item.item.image_url,
-                }
-                for item in user_closet_items
-            ]
-        else:
-            return Response({"error": "No clothing items found in your closet."}, status=400)
-    
-    else:
-        # Guest user: Use uploaded images instead (temporary storage)
-        if not guest_clothing:
-            return Response({"error": "Guests must upload clothing images."}, status=400)
+    # ✅ Store category keys as **integers** for consistent lookup
+    category_map = defaultdict(list)
+    for entry in user_closet_items:
+        clothing_item = entry.item
+        category_key = int(clothing_item.category_id)  # Ensure category key is an integer
+        category_map[category_key].append({
+            "item_id": clothing_item.item_id,
+            "item_name": clothing_item.item_name,
+            "image_url": request.build_absolute_uri(clothing_item.image_url) if clothing_item.image_url else None,
+        })
 
-        clothing_items = [
-            {
-                "name": f"Guest Item {i+1}",
-                "category": item.get("category", "Unknown"),
-                "color": item.get("color", "Unknown"),
-                "brand": item.get("brand", "Unknown"),
-                "image_url": item.get("image_data", ""),  # Guest uploads base64 images
-            }
-            for i, item in enumerate(guest_clothing)
-        ]
+    formatted_clothing_options = {
+        1: category_map.get(1, []),  # Head Accessory
+        2: category_map.get(2, []),  # Top
+        3: category_map.get(3, []),  # Outerwear
+        4: category_map.get(4, []),  # Bottom
+        5: category_map.get(5, []),  # Footwear
+    }
 
-    # Group clothing items by category
-    grouped_clothing = defaultdict(list)
-    for item in clothing_items:
-        grouped_clothing[item["category"]].append(item["image_url"])
+    print(f"🔹 Available Clothing Choices for LLM: {json.dumps(formatted_clothing_options, indent=2)}")
 
-    # Prepare LLM input
-    clothing_description = "\n".join(
-        [
-            f"{clothing['name']} ({clothing['color']} {clothing['category']} by {clothing['brand']})"
-            for clothing in clothing_items
-        ]
-    )
-
+    # ✅ Ensure LLM only selects from available closet items
     prompt = f"""
-    You are a fashion assistant. The user has the following clothing items:
-    {clothing_description}
+    You are a personal stylist. The user has these clothing options:
 
-    The user wants an outfit for the following occasion: {occasion}.
+    {json.dumps(formatted_clothing_options, indent=2)}
 
-    Based on the available clothes, suggest a stylish and appropriate outfit.
+    The user wants an outfit for this occasion: **{occasion}**.
+
+    🚨 **Rules:**
+    - Pick ONLY from the given clothing items.
+    - Do NOT create new items.
+    - If no suitable item exists for a category, return `"None"`.
+    - Always return **ONLY JSON**. No extra words.
+
+    📌 **JSON Response Format:**
+    ```json
+    {{
+        "1": {{"item_id": 123, "item_name": "Selected Hat"}}, 
+        "2": {{"item_id": 456, "item_name": "Selected Shirt"}},
+        "3": {{"item_id": 789, "item_name": "Selected Jacket"}},
+        "4": {{"item_id": 321, "item_name": "Selected Pants"}},
+        "5": {{"item_id": 654, "item_name": "Selected Shoes"}}
+    }}
+    ```
     """
 
-    # Generate outfit suggestion using Gemini
-    response = genai.chat(messages=[{"role": "user", "content": prompt}])
+    print("🔹 Sending Prompt to LLM...")
 
-    outfit_suggestion = response.text if response else "No outfit could be generated."
+    try:
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(prompt)
+        raw_response = response.text
+        print(f"🔹 Raw Response from LLM: {raw_response}")
 
-    # Save suggestion only if the user is authenticated
-    if user:
-        OutfitSuggestion.objects.create(suggestion=outfit_suggestion)
+        # Extract JSON
+        json_match = re.search(r"\{[\s\S]*\}", raw_response)
+        if not json_match:
+            return Response({"error": "LLM response is not JSON formatted."}, status=500)
+
+        cleaned_response = json_match.group().strip()
+        cleaned_response = re.sub(r"```(json)?", "", cleaned_response).strip()
+
+        outfit_suggestion = json.loads(cleaned_response)
+
+        # ✅ Fix: Ensure correct integer category lookup
+        final_outfit = {}
+        for category, details in outfit_suggestion.items():
+            category = int(category)  # Convert key to integer for lookup
+            if not details or "item_id" not in details:
+                final_outfit[category] = {"item": "None", "image": None, "item_id": None}
+                continue
+
+            item_id = details["item_id"]
+            matched_item = next(
+                (item for item in category_map.get(category, []) if item["item_id"] == item_id),
+                None
+            )
+
+            if matched_item:
+                final_outfit[category] = {
+                    "item": matched_item["item_name"],
+                    "image": matched_item["image_url"],  # ✅ Ensure correct image path
+                    "item_id": matched_item["item_id"]
+                }
+            else:
+                final_outfit[category] = {"item": "None", "image": None, "item_id": None}
+
+        print(f"🔹 Final Corrected Outfit Suggestion: {final_outfit}")
+
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return Response({"error": f"LLM request failed: {str(e)}"}, status=500)
+
+    # ✅ Save suggestion in DB
+    OutfitSuggestion.objects.create(suggestion=json.dumps(final_outfit))
 
     return Response({
-        "outfit": outfit_suggestion,
-        "clothing_images_by_category": grouped_clothing
+        "outfit": final_outfit,
+        "user_id": user_id,
+        "outfit_name": f"{occasion} Outfit"
     })

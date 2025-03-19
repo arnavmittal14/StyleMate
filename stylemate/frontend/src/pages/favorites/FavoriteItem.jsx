@@ -1,7 +1,5 @@
-// FavoriteItem.jsx
-import React from 'react';
-import './FavoriteItem2.css'; // Make sure to add styling for individual items
-
+import React from "react";
+import "./FavoriteItem2.css";
 
 const FavoriteItem = ({ name, items }) => {
   return (
@@ -13,9 +11,13 @@ const FavoriteItem = ({ name, items }) => {
       <div className="item-container">
         {items.map((item, index) => (
           <div key={index} className="item-card">
-            <img className="item-image" src={item.image} alt={item.name} />
+            {item.image_url ? (
+              <img className="item-image" src={item.image_url} alt={item.item_name} />
+            ) : (
+              <div className="no-image">No Image</div>
+            )}
             <div className="item-details">
-              {/* <div className="item-name">{item.name}</div> */}
+              <div className="item-name">{item.item_name}</div>
             </div>
           </div>
         ))}

@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import OutfitModal from "./OutfitModal";
 import "./Home.css";
+import "./OutfitModal.css";
+
+
 
 export default function Home() {
     const navigate = useNavigate();
@@ -79,10 +82,10 @@ export default function Home() {
       setIsModalOpen(true); 
   
       try {
-        const response = await fetch("http://localhost:8000/generate-outfit/", {
+        const response = await fetch("http://localhost:8000/api/generate-outfit/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ occasion }),
+          body: JSON.stringify({ occasion, user_id: localStorage.getItem("user_id")  }),
         });
   
         if (!response.ok) throw new Error("Failed to fetch outfit");
