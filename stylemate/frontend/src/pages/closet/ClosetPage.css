@@ -69,7 +69,7 @@
   align-items: center;
   justify-content: space-between;
   position: relative;
-  overflow: hidden; /* Ensure the delete button stays within bounds */
+  overflow: hidden;
 }
 
 .items-image {
@@ -89,24 +89,24 @@
 }
 
 
-/* Action buttons container for edit and delete */
+
 .action-buttons {
   display: flex;
-  gap: 0.1rem; /* Reduce gap between the buttons */
+  gap: 0.1rem;
   position: absolute;
   top: 8px;
-  right: 8px; /* Position the container at the top right corner */
+  right: 8px;
   opacity: 0;
   visibility: hidden;
 }
 
-/* Show the action buttons when hovering over the closet item */
+
 .closet-item:hover .action-buttons {
   opacity: 1;
   visibility: visible;
 }
 
-/* Edit button style */
+
 .edit-button {
   background: none;
   border: none;
@@ -120,16 +120,16 @@
   transform: scale(1.2);
 }
 
-/* Delete button style */
+
 .delete-button {
   background: none;
   border: none;
-  font-size: 1rem; /* Increase size for consistency */
+  font-size: 1rem;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
 
 .delete-button:hover {
-  transform: scale(1.2); /* Hover effect for delete button */
+  transform: scale(1.2);
 }

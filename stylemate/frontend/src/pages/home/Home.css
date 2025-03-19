@@ -1,55 +1,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
 
-/* Main container */
 .home-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 800px; /* Limits the width */
-    margin: 0 auto; /* Centers the container */
-    padding: 20px; /* Adds some spacing around */
-    box-sizing: border-box; /* Prevents extra width from padding */
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 20px; 
+    box-sizing: border-box; 
 }
 
-/* Main content section */
 .main-content {
     text-align: center;
-    margin-top: 3rem; /* mt-12 */
-    width: 100%; /* Ensures responsiveness */
+    margin-top: 3rem; 
+    width: 100%; 
     padding: 20px;
     border-radius: 10px;
-    background: #f9f9f9; /* Adds a light background */
+    background: #f9f9f9; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Heading */
 .main-heading {
-    font-size: 2rem; /* text-3xl */
-    font-weight: 800; /* font-bold */
-    color: #646363; /* text-gray-800 */
+    font-size: 2rem;
+    font-weight: 800;
+    color: #646363;
     font-family: "Dancing Script", cursive;
     margin-bottom: 10px;
 }
 
-/* Description */
+
 .main-description {
-    color: #4b5563; /* text-gray-600 */
-    margin-top: 0.5rem; /* mt-2 */
+    color: #4b5563;
+    margin-top: 0.5rem;
 }
 
-/* Outfit generator card */
+
 .generator-card {
     background-color: white;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     border-radius: 1rem;
     padding: 1.5rem;
     margin-top: 2rem;
-    width: 90%; /* Adjusted width for better responsiveness */
+    width: 90%;
     max-width: 500px;
 }
 
-/* Generator title & subtitle */
+
 .generator-title, .generator-subtitle {
     font-size: 1.125rem;
     font-weight: 600;
@@ -57,15 +54,15 @@
     text-align: center;
 }
 
-/* Input section */
+
 .input-container {
     margin-top: 1rem;
     display: flex;
-    flex-wrap: wrap; /* Wraps input and button on smaller screens */
+    flex-wrap: wrap;
     gap: 0.5rem;
 }
 
-/* Input field */
+
 .occasion-input {
     flex: 1;
     padding: 0.5rem;
@@ -75,7 +72,7 @@
     width: 100%;
 }
 
-/* Button */
+
 .generate-button {
     background-color: #dcbfb2;
     color: #4b5563;
@@ -91,7 +88,7 @@
     background-color: #bba297;
 }
 
-/* Weather display */
+
 .weather-card {
     margin-top: 1.5rem;
     background-image: linear-gradient(to bottom, rgb(234, 217, 190), rgb(248, 225, 225));
@@ -103,31 +100,28 @@
 }
 
 
-/* ----------------------- MEDIA QUERIES ---------------------- */
 
-/* Adjust for smaller screens (tablets & smaller laptops) */
 @media (max-width: 768px) {
-    .home-container {
-        max-width: 90%;
-        padding: 15px;
-    }
-
-    .main-content, .generator-card, .weather-card {
-        width: 100%;
-        padding: 15px;
-    }
-
-    .generator-card {
-        max-width: 450px;
-    }
-
     .weather-card {
-        max-width: 450px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
     }
 
     .input-container {
+        display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .occasion-input {
+        width: 90%;
+        text-align: center;
     }
 
     .generate-button {
@@ -135,25 +129,31 @@
     }
 }
 
-/* Adjust for mobile screens */
+
 @media (max-width: 480px) {
-    .main-heading {
-        font-size: 1.5rem;
+    .weather-card {
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
     }
 
-    .generator-title, .generator-subtitle {
-        font-size: 1rem;
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
     }
 
-    .generator-card, .weather-card {
-        max-width: 350px;
+    .occasion-input {
+        width: 90%;
+        text-align: center;
     }
 
     .generate-button {
         width: 100%;
-    }
-
-    .modal {
-        width: 90%;
     }
 }
