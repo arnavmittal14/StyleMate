@@ -161,6 +161,11 @@ export default function ClosetPage() {
   return (
     <div className="closet-container">
       {/* Filters Section */}
+
+      <div className="main-content">
+        <h2 className="main-heading">Your Personal AI Stylist</h2>
+      </div>
+
       <div className="filters-container">
         {["All Items", "Head Accessory", "Tops", "Bottoms", "Outerwear", "Footwear"].map(
           (filter, index) => (
