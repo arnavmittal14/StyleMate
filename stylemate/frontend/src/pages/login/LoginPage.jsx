@@ -2,23 +2,24 @@ import { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
+import { API_BASE_URL } from "./api";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  
+
   // States for regular login
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  
+
   // States for guest login flow
   const [showGuestPopup, setShowGuestPopup] = useState(false);
   const [guestGender, setGuestGender] = useState("female"); // default to female
 
   // Helper to update AuthContext with current user data from backend
   const fetchAndSetCurrentUser = () => {
-    fetch("http://localhost:8000/api/current_user/", {
+    fetch(`${API_BASE_URL}/api/current_user/`, {
       method: "GET",
       credentials: "include",
       headers: { Accept: "application/json" },
@@ -26,7 +27,6 @@ export default function LoginPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.user && data.user.user_id) {
-          // Update AuthContext with complete user data
           login({ email: data.user.email, user_id: data.user.user_id });
           navigate("/");
         } else {
@@ -43,7 +43,7 @@ export default function LoginPage() {
   const handleLogin = (e) => {
     e.preventDefault();
     setError("");
-    fetch("http://localhost:8000/api/login/", {
+    fetch(`${API_BASE_URL}/api/login/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,14 +54,11 @@ export default function LoginPage() {
     })
       .then((res) => res.json())
       .then((data) => {
-        // If login is successful, data.message should be truthy.
-        // Check if user_id is included; if not, fetch current user.
         if (data.message) {
           if (data.user_id) {
             login({ email, user_id: data.user_id });
             navigate("/");
           } else {
-            // If user_id is missing, fetch the current user info.
             fetchAndSetCurrentUser();
           }
         } else if (data.error) {
@@ -82,7 +79,7 @@ export default function LoginPage() {
 
   // When the guest chooses a gender, call the guest_login API endpoint
   const confirmGuestLogin = () => {
-    fetch("http://localhost:8000/api/guest_login/", {
+    fetch(`${API_BASE_URL}/api/guest_login/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -184,22 +181,22 @@ export default function LoginPage() {
           <div className="popup-card">
             <h3>Choose Your Preferred Closet</h3>
             <div className="closet-selection">
-            <button 
-                className={guestGender === "female" ? "selected" : ""} 
+              <button
+                className={guestGender === "female" ? "selected" : ""}
                 onClick={() => setGuestGender("female")}
               >
                 Female Closet
               </button>
 
-              <button 
-                className={guestGender === "male" ? "selected" : ""} 
+              <button
+                className={guestGender === "male" ? "selected" : ""}
                 onClick={() => setGuestGender("male")}
               >
                 Male Closet
               </button>
 
-              <button 
-                className={guestGender === "other" ? "selected" : ""} 
+              <button
+                className={guestGender === "other" ? "selected" : ""}
                 onClick={() => setGuestGender("other")}
               >
                 Other
