@@ -1,0 +1,24 @@
+{
+    "services": [
+      {
+        "name": "backend",
+        "root": "stylemate/app",
+        "buildCommand": "pip install -r requirements.txt",
+        "startCommand": "gunicorn --bind 0.0.0.0:8000 app.wsgi:application",
+        "envVars": {
+          "DJANGO_SETTINGS_MODULE": "app.settings",
+          "DEBUG": "False"
+        }
+      },
+      {
+        "name": "frontend",
+        "root": "stylemate/frontend",
+        "buildCommand": "npm install && npm run build",
+        "startCommand": "npx serve -s build",
+        "envVars": {
+          "REACT_APP_API_URL": "https://your-backend-url.up.railway.app"
+        }
+      }
+    ]
+  }
+  
