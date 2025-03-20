@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
-import { API_BASE_URL } from "../../api";
+import { apiUrl } from "../../api";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -19,7 +19,7 @@ export default function LoginPage() {
 
   // Helper to update AuthContext with current user data from backend
   const fetchAndSetCurrentUser = () => {
-    fetch(`${API_BASE_URL}/api/current_user/`, {
+    fetch(`${apiUrl}/api/current_user/`, {
       method: "GET",
       credentials: "include",
       headers: { Accept: "application/json" },
@@ -43,7 +43,7 @@ export default function LoginPage() {
   const handleLogin = (e) => {
     e.preventDefault();
     setError("");
-    fetch(`${API_BASE_URL}/api/login/`, {
+    fetch(`${apiUrl}/api/login/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -79,7 +79,7 @@ export default function LoginPage() {
 
   // When the guest chooses a gender, call the guest_login API endpoint
   const confirmGuestLogin = () => {
-    fetch(`${API_BASE_URL}/api/guest_login/`, {
+    fetch(`${apiUrl}/api/guest_login/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
