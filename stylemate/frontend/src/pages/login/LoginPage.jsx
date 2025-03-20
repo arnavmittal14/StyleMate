@@ -20,7 +20,7 @@ export default function LoginPage() {
   // Helper to update AuthContext with current user data from backend
   const fetchAndSetCurrentUser = async () => {
     try {
-      const res = await api.get("/current_user/", { withCredentials: true });
+      const res = await api.get("/api/current_user/", { withCredentials: true });
       if (res.data.user && res.data.user.user_id) {
         login({ email: res.data.user.email, user_id: res.data.user.user_id });
         navigate("/");
@@ -38,7 +38,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      const res = await api.post("/login/", { email, password }, { withCredentials: true });
+      const res = await api.post("/api/login/", { email, password }, { withCredentials: true });
       if (res.data.message) {
         if (res.data.user_id) {
           login({ email, user_id: res.data.user_id });
@@ -64,7 +64,7 @@ export default function LoginPage() {
   // Confirm guest login request
   const confirmGuestLogin = async () => {
     try {
-      const res = await api.post("/guest_login/", { gender: guestGender.toLowerCase() }, { withCredentials: true });
+      const res = await api.post("/api/guest_login/", { gender: guestGender.toLowerCase() }, { withCredentials: true });
       if (res.data.user_id) {
         let guestEmail = `guest_${guestGender.toLowerCase()}@example.com`;
         login({ email: guestEmail, user_id: res.data.user_id });
