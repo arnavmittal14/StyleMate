@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
-import { apiUrl } from "../../api";
+import { api, apiUrl } from "../../api";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -18,57 +18,42 @@ export default function LoginPage() {
   const [guestGender, setGuestGender] = useState("female"); // default to female
 
   // Helper to update AuthContext with current user data from backend
-  const fetchAndSetCurrentUser = () => {
-    fetch(`${apiUrl}/api/current_user/`, {
-      method: "GET",
-      credentials: "include",
-      headers: { Accept: "application/json" },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user && data.user.user_id) {
-          login({ email: data.user.email, user_id: data.user.user_id });
-          navigate("/");
-        } else {
-          setError("Failed to retrieve user info after login");
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching current user:", err);
-        setError("Error fetching current user");
-      });
+  const fetchAndSetCurrentUser = async () => {
+    try {
+      const res = await api.get(`/current_user/`, { withCredentials: true });
+      const data = res.data;
+
+      if (data.user && data.user.user_id) {
+        login({ email: data.user.email, user_id: data.user.user_id });
+        navigate("/");
+      } else {
+        setError("Failed to retrieve user info after login.");
+      }
+    } catch (err) {
+      console.error("Error fetching current user:", err);
+      setError("Error fetching current user.");
+    }
   };
 
   // Regular login handler
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-    fetch(`${apiUrl}/api/login/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.message) {
-          if (data.user_id) {
-            login({ email, user_id: data.user_id });
-            navigate("/");
-          } else {
-            fetchAndSetCurrentUser();
-          }
-        } else if (data.error) {
-          setError(data.error);
-        }
-      })
-      .catch((err) => {
-        console.error("Error during login:", err);
-        setError("Login failed. Please try again.");
-      });
+
+    try {
+      const res = await api.post(`/login/`, { email, password }, { withCredentials: true });
+      const data = res.data;
+
+      if (data.user_id) {
+        login({ email, user_id: data.user_id });
+        navigate("/");
+      } else {
+        fetchAndSetCurrentUser();
+      }
+    } catch (err) {
+      console.error("Error during login:", err);
+      setError(err.response?.data?.error || "Login failed. Please try again.");
+    }
   };
 
   // When guest login button is clicked, show the gender selection popup
@@ -78,38 +63,26 @@ export default function LoginPage() {
   };
 
   // When the guest chooses a gender, call the guest_login API endpoint
-  const confirmGuestLogin = () => {
-    fetch(`${apiUrl}/api/guest_login/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ gender: guestGender.toLowerCase() }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user_id) {
-          let guestEmail = "";
-          if (guestGender.toLowerCase() === "male") {
-            guestEmail = "guest_male@example.com";
-          } else if (guestGender.toLowerCase() === "female") {
-            guestEmail = "guest_female@example.com";
-          } else {
-            guestEmail = "guest_other@example.com";
-          }
-          login({ email: guestEmail, user_id: data.user_id });
-          setShowGuestPopup(false);
-          navigate("/");
-        } else if (data.error) {
-          setError(data.error);
-        }
-      })
-      .catch((err) => {
-        console.error("Error during guest login:", err);
-        setError("Guest login failed. Please try again.");
-      });
+  const confirmGuestLogin = async () => {
+    try {
+      const res = await api.post(`/guest_login/`, { gender: guestGender.toLowerCase() }, { withCredentials: true });
+      const data = res.data;
+
+      if (data.user_id) {
+        const guestEmail = guestGender.toLowerCase() === "male"
+          ? "guest_male@example.com"
+          : guestGender.toLowerCase() === "female"
+            ? "guest_female@example.com"
+            : "guest_other@example.com";
+
+        login({ email: guestEmail, user_id: data.user_id });
+        setShowGuestPopup(false);
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Error during guest login:", err);
+      setError(err.response?.data?.error || "Guest login failed. Please try again.");
+    }
   };
 
   // Cancel guest login popup
