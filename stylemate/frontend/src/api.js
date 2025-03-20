@@ -1,4 +1,7 @@
+import axios from "axios";
 
-const API_BASE_URL = "/choreo-apis/stylemate/app/v1"; 
-
-export { API_BASE_URL };
+const apiUrl = "/choreo-apis/stylemate/app/v1";
+const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : apiUrl,
+})
+export { apiUrl };
