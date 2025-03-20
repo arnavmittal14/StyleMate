@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
-import { API_BASE_URL } from "./api";
+import { API_BASE_URL } from "../../api";
 
 export default function LoginPage() {
   const { login } = useAuth();
