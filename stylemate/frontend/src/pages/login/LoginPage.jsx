@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
-import { api } from "./api"; // Importing the API instance
+import { api } from "../../api"; // Importing the API instance
 import "./LoginPage.css";
 
 export default function LoginPage() {
