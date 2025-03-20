@@ -4,3 +4,6 @@ stylemate/.vscode/settings.json
 stylemate/app/app/settings.py
 stylemate/app/app/settings.py
 stylemate/app/app/settings.py
+.env
+d.sqlite3
+settings.json
