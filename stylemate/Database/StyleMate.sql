@@ -1,6 +1,4 @@
-DROP DATABASE IF EXISTS stylemate_database;
-CREATE DATABASE stylemate_database;
-USE stylemate_database;
+USE defaultdb;
 
 -- Categories Table
 CREATE TABLE Categories (
