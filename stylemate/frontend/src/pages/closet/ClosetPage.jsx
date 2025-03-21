@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { api } from "../../api"; // ✅ Axios instance
 import "./ClosetPage.css";
 import NewItemModal from "./NewItemModal";
 
@@ -10,47 +11,39 @@ export default function ClosetPage() {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [error, setError] = useState("");
 
-  // Mapping from category_id to category name
   const categoryMapping = {
     1: "Head Accessory",
     2: "Tops",
     3: "Outerwear",
     4: "Bottoms",
-    5: "Footwear"
+    5: "Footwear",
   };
 
-  // Fetch closet items from the backend using the current user's id stored in localStorage
-  const fetchClosetItems = () => {
+  const fetchClosetItems = async () => {
     const userId = localStorage.getItem("user_id");
     if (!userId) {
       setError("User not logged in");
       return;
     }
-    fetch(`http://localhost:8000/api/get_closet/?user_id=${userId}`, {
-      credentials: "include",
-      headers: { Accept: "application/json" },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.closet) {
-          setClothingItems(data.closet);
-        } else if (data.error) {
-          setError(data.error);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching closet items:", err);
-        setError("Error fetching closet items");
-      });
+
+    try {
+      const res = await api.get(`/api/get_closet/?user_id=${userId}`);
+      if (res.data.closet) {
+        setClothingItems(res.data.closet);
+      } else if (res.data.error) {
+        setError(res.data.error);
+      }
+    } catch (err) {
+      console.error("Error fetching closet items:", err);
+      setError("Error fetching closet items");
+    }
   };
 
   useEffect(() => {
     fetchClosetItems();
   }, []);
 
-  // Called when a new item is added via the modal.
-  // Sends item info along with an uploaded photo (if any) to the backend's add_to_closet endpoint.
-  const handleAddItem = (newItem) => {
+  const handleAddItem = async (newItem) => {
     setError("");
     const userId = localStorage.getItem("user_id");
     if (!userId) {
@@ -58,7 +51,6 @@ export default function ClosetPage() {
       return;
     }
 
-    // Create FormData for file upload and text fields.
     const formData = new FormData();
     formData.append("item_name", newItem.item_name);
     formData.append("description", newItem.description || "");
@@ -67,35 +59,30 @@ export default function ClosetPage() {
     formData.append("brand", newItem.brand || "");
     formData.append("user_id", userId);
 
-    // Append the image file (if provided)
     if (newItem.photo) {
       formData.append("photo", newItem.photo);
     } else if (newItem.image_url) {
       formData.append("image_url", newItem.image_url);
     }
 
-    fetch("http://localhost:8000/api/add_to_closet/", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.message) {
-          // On success, re-fetch closet items to update the UI.
-          fetchClosetItems();
-          setIsModalOpen(false);
-        } else if (data.error) {
-          setError(data.error);
-        }
-      })
-      .catch((err) => {
-        console.error("Error adding item to closet:", err);
-        setError("Error adding item. Please try again.");
+    try {
+      const res = await api.post("/api/add_to_closet/", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
+
+      if (res.data.message) {
+        fetchClosetItems();
+        setIsModalOpen(false);
+      } else if (res.data.error) {
+        setError(res.data.error);
+      }
+    } catch (err) {
+      console.error("Error adding item to closet:", err);
+      setError("Error adding item. Please try again.");
+    }
   };
 
-  const handleDeleteItem = (optionalItem = -1) => {
+  const handleDeleteItem = async (optionalItem = -1) => {
     const userId = localStorage.getItem("user_id");
     if (!userId) {
       setError("User not logged in");
@@ -104,22 +91,21 @@ export default function ClosetPage() {
 
     const itemForDeletion = optionalItem === -1 ? itemToDelete : optionalItem;
 
-    fetch(`http://localhost:8000/api/delete_from_closet/?user_id=${userId}`, {
-      method: "DELETE",
-      credentials: "include",
-      headers: { Accept: "application/json" },
-      body: JSON.stringify(clothingItems[itemForDeletion])
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.message) {
-          fetchClosetItems()
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching closet items:", err);
-        setError("Error fetching closet items");
+    try {
+      const res = await api.delete(`/api/delete_from_closet/?user_id=${userId}`, {
+        data: JSON.stringify(clothingItems[itemForDeletion]),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
+      if (res.data.message) {
+        fetchClosetItems();
+      }
+    } catch (err) {
+      console.error("Error deleting item:", err);
+      setError("Error deleting item");
+    }
 
     setIsDeleteModalOpen(false);
   };
@@ -129,18 +115,15 @@ export default function ClosetPage() {
     setIsDeleteModalOpen(true);
   };
 
-
   const filteredItems =
     selectedCategory === "All Items"
       ? clothingItems
       : clothingItems.filter(
-        (item) => categoryMapping[item.category_id] === selectedCategory
-      );
+          (item) => categoryMapping[item.category_id] === selectedCategory
+        );
 
   return (
     <div className="closet-container">
-      {/* Filters Section */}
-
       <div className="closet-content">
         <h2 className="closet-heading">Closet</h2>
       </div>
@@ -159,18 +142,15 @@ export default function ClosetPage() {
         )}
       </div>
 
-      {/* Add New Item Button */}
       <div className="add-button-container">
         <button className="add-button" onClick={() => setIsModalOpen(true)}>
           + Add New Item
         </button>
       </div>
 
-      {/* Closet Items Grid */}
       <div className="closet-grid">
         {filteredItems.map((item, index) => (
           <div key={index} className="closet-item">
-            {/* Display the image using the URL returned from backend's serve endpoint */}
             <img src={item.image_url} alt={item.item_name} className="items-image" />
             <p className="item-name">{item.item_name}</p>
             <div className="action-buttons">
@@ -182,7 +162,6 @@ export default function ClosetPage() {
         ))}
       </div>
 
-      {/* New Item Modal */}
       {isModalOpen && (
         <NewItemModal
           onClose={() => setIsModalOpen(false)}
@@ -190,16 +169,6 @@ export default function ClosetPage() {
         />
       )}
 
-      {/* Edit Item Modal
-      {isEditModalOpen && (
-        <NewItemModal
-          onClose={() => setIsEditModalOpen(false)}
-          onAddItem={handleEditItem}
-          initialItem={clothingItems[itemToEdit]}
-        />
-      )} */}
-
-      {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="delete-modal">
           <div className="delete-modal-content">
@@ -209,6 +178,7 @@ export default function ClosetPage() {
           </div>
         </div>
       )}
+
       {error && <p className="error-message">{error}</p>}
     </div>
   );
