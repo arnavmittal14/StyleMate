@@ -25,5 +25,5 @@ yarn-error.log*
 # Python
 __pycache__/*
 venv/*
-
+.env
 app/app/settings.py
