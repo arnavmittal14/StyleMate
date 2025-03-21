@@ -362,6 +362,7 @@ User = get_user_model()
 
 
 @csrf_exempt
+@csrf_exempt
 def get_closet(request):
     if request.method != "GET":
         return JsonResponse({"error": "Only GET method allowed"}, status=405)
@@ -375,7 +376,8 @@ def get_closet(request):
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
-    BASE_URL = "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev"
+    # ✅ Hardcoded live Choreo base URL with correct prefix
+    BASE_URL = "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev/stylemate/app/v1.0"
 
     closet_entries = Closet.objects.filter(user=user)
     data = []
@@ -383,9 +385,9 @@ def get_closet(request):
     for entry in closet_entries:
         item = entry.item
 
-        # Manually prepend BASE_URL if the image is a relative path
         image_url = item.image_url
         if image_url and not str(image_url).startswith("http"):
+            # 🔥 Fix: Insert full path including /stylemate/app/v1.0/
             image_url = f"{BASE_URL}{image_url}"
 
         data.append(
