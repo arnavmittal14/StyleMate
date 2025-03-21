@@ -1,8 +1,9 @@
 import React from "react";
+import { api } from "../../api"; // ✅ Import your Axios instance
 import "./OutfitModal.css";
 
 const OutfitModal = ({ isOpen, onClose, occasion, loading, outfit }) => {
-  if (!isOpen) return null; // Prevent rendering if modal is closed
+  if (!isOpen) return null;
 
   const saveToFavorites = async () => {
     if (!outfit) return;
@@ -13,33 +14,24 @@ const OutfitModal = ({ isOpen, onClose, occasion, loading, outfit }) => {
       return;
     }
 
-    // Prepare the payload for saving outfit
     const outfitData = {
       user_id: userId,
-      outfit_name: `${occasion} Outfit`, // Dynamic name
+      outfit_name: `${occasion} Outfit`,
       head_accessory_item_id: outfit.outfit[1]?.item_id || null,
       top_item_id: outfit.outfit[2]?.item_id || null,
       outerwear_item_id: outfit.outfit[3]?.item_id || null,
       bottom_item_id: outfit.outfit[4]?.item_id || null,
       footwear_item_id: outfit.outfit[5]?.item_id || null,
-      current_weather: "Unknown", // Modify as needed
+      current_weather: "Unknown", // Optional: can use real weather if passed as prop
     };
 
     try {
-      const response = await fetch("http://localhost:8000/api/add_saved_outfit/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(outfitData),
-      });
+      const response = await api.post("/api/add_saved_outfit/", outfitData);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 201) {
         alert("Outfit saved to favorites!");
       } else {
-        alert(`Error: ${data.error}`);
+        alert(`Error: ${response.data.error || "Unknown error occurred"}`);
       }
     } catch (error) {
       console.error("Failed to save outfit:", error);

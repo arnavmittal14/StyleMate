@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { api } from "../../api"; // ✅ Axios instance
 import FavoriteItem from "./FavoriteItem";
 import "./FavoritesPage.css";
 
@@ -9,15 +10,19 @@ const FavoritesPage = () => {
   useEffect(() => {
     const fetchSavedOutfits = async () => {
       try {
-        const userId = localStorage.getItem("user_id"); // Get logged-in user's ID
-        const response = await fetch(`http://localhost:8000/api/get_saved_outfits/?user_id=${userId}`);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch saved outfits");
+        const userId = localStorage.getItem("user_id");
+        if (!userId) {
+          setError("User not logged in");
+          return;
         }
 
-        const data = await response.json();
-        setFavoriteOutfits(data.saved_outfits);
+        const response = await api.get(`/api/get_saved_outfits/?user_id=${userId}`);
+
+        if (response.data.saved_outfits) {
+          setFavoriteOutfits(response.data.saved_outfits);
+        } else if (response.data.error) {
+          setError(response.data.error);
+        }
       } catch (err) {
         console.error("Error fetching saved outfits:", err);
         setError("Failed to load saved outfits. Please try again.");
@@ -44,7 +49,7 @@ const FavoritesPage = () => {
           <FavoriteItem 
             key={outfit.saved_outfit_id}
             name={outfit.outfit_name}
-            items={Object.values(outfit.items).filter(item => item !== null)} // Filter out null items
+            items={Object.values(outfit.items).filter(item => item !== null)}
           />
         ))
       )}

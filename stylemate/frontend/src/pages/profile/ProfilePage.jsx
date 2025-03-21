@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { api } from "../../api"; // ✅ Use centralized Axios instance
 import "./ProfilePage2.css";
 
 export default function ProfilePage() {
@@ -13,21 +14,18 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Fetch current user info on mount
   useEffect(() => {
-    fetch("http://localhost:8000/api/current_user/", {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          setFirstName(data.user.first_name || "");
-          setLastName(data.user.last_name || "");
-          setEmail(data.user.email || "");
-          setGender(data.user.gender || "male");
-          setProfilePhotoPreview(data.user.profile_photo_url || "/profile.png");
-        } else if (data.error) {
-          setError(data.error);
+    api.get("/api/current_user/")
+      .then((res) => {
+        if (res.data.user) {
+          const user = res.data.user;
+          setFirstName(user.first_name || "");
+          setLastName(user.last_name || "");
+          setEmail(user.email || "");
+          setGender(user.gender || "male");
+          setProfilePhotoPreview(user.profile_photo_url || "/profile.png");
+        } else if (res.data.error) {
+          setError(res.data.error);
         }
         setLoading(false);
       })
@@ -38,7 +36,6 @@ export default function ProfilePage() {
       });
   }, []);
 
-  // Handle file selection for profile photo
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -49,8 +46,7 @@ export default function ProfilePage() {
     }
   };
 
-  // Use XMLHttpRequest to send FormData and update upload progress
-  const handleSave = () => {
+  const handleSave = async () => {
     setError("");
     setMessage("");
 
@@ -64,42 +60,28 @@ export default function ProfilePage() {
       formData.append("profile_photo", profilePhotoFile);
     }
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:8000/api/update_user/", true);
-    xhr.withCredentials = true;
+    try {
+      const res = await api.post("/api/update_user/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentComplete = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentComplete);
+        },
+      });
 
-    // Update progress
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percentComplete = Math.round((event.loaded / event.total) * 100);
-        setUploadProgress(percentComplete);
-      }
-    };
-
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        try {
-          const response = JSON.parse(xhr.responseText);
-          if (response.message) {
-            setMessage(response.message);
-          } else {
-            setError(response.error || "Unknown error");
-          }
-        } catch (e) {
-          setError("Invalid response from server");
-        }
+      if (res.data.message) {
+        setMessage(res.data.message);
       } else {
-        setError("Error updating user. Status: " + xhr.status);
+        setError(res.data.error || "Unknown error");
       }
-      setUploadProgress(0);
-    };
-
-    xhr.onerror = () => {
+    } catch (err) {
+      console.error("Error updating user:", err);
       setError("Error updating user. Please try again.");
+    } finally {
       setUploadProgress(0);
-    };
-
-    xhr.send(formData);
+    }
   };
 
   if (loading) return <div>Loading...</div>;
@@ -107,11 +89,7 @@ export default function ProfilePage() {
   return (
     <div className="profile-card">
       <div className="profile-left">
-        <img
-          src={profilePhotoPreview}
-          alt="Profile"
-          className="profile-img"
-        />
+        <img src={profilePhotoPreview} alt="Profile" className="profile-img" />
         <input
           type="file"
           accept="image/*"
@@ -169,6 +147,7 @@ export default function ProfilePage() {
             </select>
           </div>
         </div>
+
         {uploadProgress > 0 && (
           <div className="progress-bar-container">
             <div
@@ -179,6 +158,7 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+
         {error && <p className="error-message">{error}</p>}
         {message && <p className="success-message">{message}</p>}
         <button className="save-button" onClick={handleSave}>
