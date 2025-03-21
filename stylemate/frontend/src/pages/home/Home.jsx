@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../api"; // ✅ Axios instance
+import { liveApi } from "../../api"; // ⬅️ updated from `api` to `liveApi`
 import OutfitModal from "./OutfitModal";
 import "./Home.css";
 import "./OutfitModal.css";
@@ -73,7 +73,7 @@ export default function Home() {
     setIsModalOpen(true);
 
     try {
-      const response = await api.post("/api/generate-outfit/", {
+      const response = await liveApi.post("/api/generate-outfit/", {
         occasion,
         user_id: localStorage.getItem("user_id"),
       });
