@@ -353,12 +353,9 @@ def get_closet(request):
     for entry in closet_entries:
         item = entry.item
 
-        # Check if image_url contains binary data
-        if isinstance(item.image_url, bytes):
-            image_base64 = base64.b64encode(item.image_url).decode('utf-8')
-            image_url = f"data:image/png;base64,{image_base64}"
-        else:
-            image_url = item.image_url  # If it's a URL, use it directly
+        image_url = item.image_url
+        if image_url and not str(image_url).startswith("http"):
+            image_url = request.build_absolute_uri(image_url)
 
         data.append({
             'closet_id': entry.closet_id,
