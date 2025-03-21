@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../api"; // Use the centralized Axios instance
 import "./SignupPage.css";
 
 export default function SignupPage() {
@@ -21,7 +22,6 @@ export default function SignupPage() {
       return;
     }
 
-    // Build the payload for the registration API.
     const payload = {
       first_name: firstName,
       last_name: lastName,
@@ -33,19 +33,12 @@ export default function SignupPage() {
 
     console.log("Payload to register:", payload); // Debug output
 
-    fetch("http://localhost:8000/api/register/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.message) {
-          // Registration successful.
-          // Option 1: Automatically log the user in
+    api.post("/api/register/", payload)
+      .then((res) => {
+        if (res.data.message) {
           navigate("/login");
-        } else if (data.error) {
-          setError(data.error);
+        } else if (res.data.error) {
+          setError(res.data.error);
         }
       })
       .catch((err) => {
