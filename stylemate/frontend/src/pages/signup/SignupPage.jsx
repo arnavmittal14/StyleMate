@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../api"; // Use the centralized Axios instance
+import { api } from "../../api"; // Centralized Axios instance
 import "./SignupPage.css";
 
 export default function SignupPage() {
@@ -10,10 +10,10 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [gender, setGender] = useState("Male");
+  const [gender, setGender] = useState("male"); // lowercase by default
   const [error, setError] = useState("");
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -27,24 +27,39 @@ export default function SignupPage() {
       last_name: lastName,
       email: email,
       password1: password,
-      password2: password,
+      password2: confirmPassword,
       gender: gender.toLowerCase(),
     };
 
-    console.log("Payload to register:", payload); // Debug output
+    console.log("Payload to register:", payload);
 
-    api.post("/api/register/", payload)
-      .then((res) => {
-        if (res.data.message) {
-          navigate("/login");
-        } else if (res.data.error) {
-          setError(res.data.error);
+    try {
+      const res = await api.post("/api/register/", payload);
+
+      if (res.data.message) {
+        navigate("/login");
+      } else if (res.data.error) {
+        setError(res.data.error);
+      }
+    } catch (err) {
+      console.error("Error during registration:", err);
+
+      if (err.response && err.response.data) {
+        const data = err.response.data;
+
+        // Combine multiple field errors into one string
+        if (typeof data === "object") {
+          const messages = Object.entries(data)
+            .map(([field, msg]) => `${field}: ${Array.isArray(msg) ? msg.join(", ") : msg}`)
+            .join("\n");
+          setError(messages);
+        } else {
+          setError(data.error || "Registration failed. Please try again.");
         }
-      })
-      .catch((err) => {
-        console.error("Error during registration:", err);
-        setError("Registration failed. Please try again.");
-      });
+      } else {
+        setError("Network error. Please try again.");
+      }
+    }
   };
 
   return (
