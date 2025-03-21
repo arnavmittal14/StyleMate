@@ -167,7 +167,7 @@ def add_to_closet(request):
             image_url = f"/media/{file_path}"  # URL to access image
 
         except Exception as e:
-            return JsonResponse({"error": f"Error processing image: {str(e)}"}, status=400)
+            return JsonResponse({"error": f"Error lsprocessing image: {str(e)}"}, status=400)
 
     # Create ClothingItem instance
     clothing_item, created = ClothingItem.objects.get_or_create(

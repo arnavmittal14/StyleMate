@@ -2,8 +2,10 @@ from django.shortcuts import render
 import google.generativeai as genai
 from django.conf import settings
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import get_user_model
+from rest_framework.permissions import AllowAny
+from django.views.decorators.csrf import csrf_exempt
 from .models import OutfitSuggestion
 from closet.models import Closet, ClothingItem
 from savedoutfit.models import OutfitSet, SavedOutfit
@@ -16,10 +18,22 @@ User = get_user_model()
 # Initialize Gemini API
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
-@api_view(["POST"])
-def generate_outfit(request):
-    print("🔹 Incoming Request Data:", request.data)
 
+@api_view(["POST"])
+@csrf_exempt  # ✅ Disable CSRF protection (only for debugging)
+@permission_classes([AllowAny])  # ✅ Allow all users to access this API
+def generate_outfit(request):
+    print("🔹 Incoming Headers:", request.headers)
+    print("🔹 Incoming Data:", request.data)
+
+    # Check if Django recognizes authentication
+    print("🔹 Django Thinks User Is:", request.user)
+
+    if request.user.is_authenticated:
+        print(f"🔹 Authenticated as: {request.user.email}")
+    else:
+        print("❌ WARNING: User is Anonymous (Not Authenticated)")
+    
     data = request.data
     occasion = data.get("occasion", "").strip()
     user_id = data.get("user_id")
@@ -28,6 +42,12 @@ def generate_outfit(request):
         return Response({"error": "Please provide an occasion."}, status=400)
     if not user_id:
         return Response({"error": "User ID is required."}, status=400)
+
+    # Ensure user_id is an integer
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        return Response({"error": "Invalid user_id. Must be an integer."}, status=400)
 
     # Fetch user
     try:

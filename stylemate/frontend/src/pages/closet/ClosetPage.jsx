@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { api } from "../../api"; // ✅ Axios instance
+import { api } from "../../api"; 
 import "./ClosetPage.css";
 import NewItemModal from "./NewItemModal";
 
