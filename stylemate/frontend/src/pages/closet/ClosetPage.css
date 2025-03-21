@@ -157,3 +157,69 @@
 .delete-button:hover {
   transform: scale(1.2);
 }
+
+@media (max-width: 768px) {
+
+  .closet-content {
+    font-size: 1.5rem;
+    text-align: center;
+    max-width: 90%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    margin: 0 auto 20px;
+  }
+
+  .filters-container {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 5px;
+    max-width: 100%;
+    scrollbar-width: none;
+  }
+
+
+  .filters-container::-webkit-scrollbar {
+    display: none;
+  }
+
+
+  .filter-button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    min-width: 100px;
+    max-width: 130px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-align: center;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .closet-content {
+    font-size: 1.2rem;
+    text-align: center;
+    max-width: 90%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    margin: 0 auto;
+    margin: 0 auto 20px;
+  }
+
+  .filters-container {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 5px;
+    display: flex;
+  }
+
+  .filter-button {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.7rem;
+    min-width: 90px;
+    max-width: 120px;
+  }
+}
