@@ -15,18 +15,19 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 import pymysql
+
 pymysql.install_as_MySQLdb()
 
 load_dotenv()  # Load environment variables from .env file
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-genai.configure(api_key= GEMINI_API_KEY)
+genai.configure(api_key=GEMINI_API_KEY)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 if not os.path.exists(MEDIA_ROOT):
     os.makedirs(MEDIA_ROOT)
@@ -58,16 +59,16 @@ INSTALLED_APPS = [
     "savedoutfit",
     "ai_processor",
     "rest_framework",
-    'corsheaders',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Must be at the top
-    'django.middleware.common.CommonMiddleware',
+    "corsheaders.middleware.CorsMiddleware",  # Must be at the top
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-   # "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -100,12 +101,12 @@ WSGI_APPLICATION = "app.wsgi.application"
 
 DATABASES = {
     "default": {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
         "OPTIONS": {
             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
         },
@@ -131,8 +132,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://86c620d9-3d55-4fe7-a4df-d41269a311c1.e1-us-east-azure.choreoapps.dev",
+    "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev/stylemate/app/v1.0",
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.choreoapps\.dev$",  # optional: allow other choreo apps
+]
 
 
 # Internationalization
@@ -157,6 +167,6 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 ALLOWED_HOSTS = ["*"]
