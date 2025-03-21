@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { api } from "../../api"; 
+import { liveApi } from "../../api"; // 🔄 switched from `api` to `liveApi`
 import "./ClosetPage.css";
 import NewItemModal from "./NewItemModal";
 
@@ -27,7 +27,7 @@ export default function ClosetPage() {
     }
 
     try {
-      const res = await api.get(`/api/get_closet/?user_id=${userId}`);
+      const res = await liveApi.get(`/api/get_closet/?user_id=${userId}`);
       if (res.data.closet) {
         setClothingItems(res.data.closet);
       } else if (res.data.error) {
@@ -66,7 +66,7 @@ export default function ClosetPage() {
     }
 
     try {
-      const res = await api.post("/api/add_to_closet/", formData, {
+      const res = await liveApi.post("/api/add_to_closet/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -92,7 +92,7 @@ export default function ClosetPage() {
     const itemForDeletion = optionalItem === -1 ? itemToDelete : optionalItem;
 
     try {
-      const res = await api.delete(`/api/delete_from_closet/?user_id=${userId}`, {
+      const res = await liveApi.delete(`/api/delete_from_closet/?user_id=${userId}`, {
         data: JSON.stringify(clothingItems[itemForDeletion]),
         headers: {
           "Content-Type": "application/json",
