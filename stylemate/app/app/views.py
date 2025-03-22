@@ -162,7 +162,7 @@ def add_to_closet(request):
                 input_image = input_image.convert("RGB")
 
             # Apply background removal
-            output_image = remove(input_image)
+            output_image = input_image
 
             # Convert to PNG bytes
             output_io = BytesIO()
@@ -494,7 +494,7 @@ def upload_and_process_photo(request):
         return HttpResponseBadRequest("Invalid image file.")
 
     # Remove background using rembg
-    output_image = remove(input_image)
+    output_image = input_image
 
     # Convert to PNG in-memory
     output_io = BytesIO()
@@ -641,7 +641,7 @@ def update_user(request):
 
         try:
             # Remove background using rembg
-            output_image = remove(input_image)
+            output_image = input_image
         except Exception as e:
             return JsonResponse({"error": f"Error processing image: {e}"}, status=400)
 
