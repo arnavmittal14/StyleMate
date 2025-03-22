@@ -564,6 +564,8 @@ def serve_profile_photo(request, user_id):
     return HttpResponse(user.profile_photo_url, content_type="image/png")
 
 
+LIVE_BASE_URL = "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev/stylemate/app/v1.0"
+
 def serve_clothing_item(request, item_id):
     try:
         item = ClothingItem.objects.get(pk=item_id)
@@ -573,13 +575,8 @@ def serve_clothing_item(request, item_id):
     if not item.image_url:
         raise Http404("No image available")
 
-    # Ensure the image URL is full
-    if item.image_url.startswith("/media/"):
-        return redirect(f"{LIVE_BASE_URL}{item.image_url}")
-    elif item.image_url.startswith("http"):
-        return redirect(item.image_url)
-    else:
-        return redirect(f"{LIVE_BASE_URL}/media/{item.image_url}")
+    # Always serve from the hardcoded LIVE_BASE_URL
+    return redirect(f"{LIVE_BASE_URL}/media/closet/{os.path.basename(item.image_url)}")
 
 
 @csrf_exempt
