@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
 from django.conf import settings
 from django.utils._os import safe_join
+from django.shortcuts import redirect
 
 # Image processing imports
 from rembg import remove
@@ -133,7 +134,9 @@ def add_to_closet(request):
     item_name = data.get("item_name")
     user_id = data.get("user_id")
     if not item_name or not user_id:
-        return JsonResponse({"error": "Missing required fields: item_name and user_id"}, status=400)
+        return JsonResponse(
+            {"error": "Missing required fields: item_name and user_id"}, status=400
+        )
 
     description = data.get("description")
     category_id = data.get("category_id")
@@ -145,7 +148,10 @@ def add_to_closet(request):
     if photo:
         try:
             if not photo.name.lower().endswith((".jpg", ".jpeg", ".png")):
-                return JsonResponse({"error": "Unsupported file type. Only JPG and PNG are allowed."}, status=400)
+                return JsonResponse(
+                    {"error": "Unsupported file type. Only JPG and PNG are allowed."},
+                    status=400,
+                )
 
             input_image = Image.open(photo)
             if input_image.mode != "RGB":
@@ -164,7 +170,9 @@ def add_to_closet(request):
 
             image_url = f"/media/{file_path}"
         except Exception as e:
-            return JsonResponse({"error": f"Error processing image: {str(e)}"}, status=400)
+            return JsonResponse(
+                {"error": f"Error processing image: {str(e)}"}, status=400
+            )
 
     try:
         user = User.objects.get(pk=user_id)
@@ -182,14 +190,16 @@ def add_to_closet(request):
 
     closet_entry = Closet.objects.create(user=user, item=clothing_item)
 
-    return JsonResponse({
-        "message": "Clothing item added to closet",
-        "closet_id": closet_entry.closet_id,
-        "item_id": clothing_item.item_id,
-        "image_url": image_url,
-    }, 
-    status=201
+    return JsonResponse(
+        {
+            "message": "Clothing item added to closet",
+            "closet_id": closet_entry.closet_id,
+            "item_id": clothing_item.item_id,
+            "image_url": image_url,
+        },
+        status=201,
     )
+
 
 @csrf_exempt
 def add_saved_outfit(request):
@@ -483,6 +493,7 @@ def upload_and_process_photo(request):
 
 LIVE_BASE_URL = "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev/stylemate/app/v1.0"
 
+
 @csrf_exempt
 def current_user(request):
     if not request.user.is_authenticated:
@@ -562,20 +573,14 @@ def serve_clothing_item(request, item_id):
     if not item.image_url:
         raise Http404("No image available")
 
-    try:
-        # Convert relative path (e.g., /media/closet/xyz.png) to absolute path
-        relative_path = item.image_url.replace("/media/", "")
-        file_path = safe_join(settings.MEDIA_ROOT, relative_path)
+    # Ensure the image URL is full
+    if item.image_url.startswith("/media/"):
+        return redirect(f"{LIVE_BASE_URL}{item.image_url}")
+    elif item.image_url.startswith("http"):
+        return redirect(item.image_url)
+    else:
+        return redirect(f"{LIVE_BASE_URL}/media/{item.image_url}")
 
-        with open(file_path, "rb") as f:
-            image_data = f.read()
-
-        response = HttpResponse(image_data, content_type="image/png")
-        response["Content-Length"] = len(image_data)
-        return response
-
-    except Exception as e:
-        raise Http404(f"Error reading image: {str(e)}")
 
 @csrf_exempt
 def update_user(request):
