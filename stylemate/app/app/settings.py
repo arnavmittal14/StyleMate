@@ -131,8 +131,28 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False  # ❌ Turn this off for security
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://86c620d9-3d55-4fe7-a4df-d41269a311c1.e1-us-east-azure.choreoapps.dev",  # ✅ your frontend
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://86c620d9-3d55-4fe7-a4df-d41269a311c1.e1-us-east-azure.choreoapps.dev",
+]
 
 
 # Internationalization
