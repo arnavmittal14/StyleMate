@@ -22,6 +22,7 @@ from savedoutfit.models import OutfitSet, SavedOutfit
 
 User = get_user_model()
 
+LIVE_BASE_URL = "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev/stylemate/app/v1.0"
 
 @csrf_exempt
 def homepage(request):
@@ -305,8 +306,7 @@ def get_saved_outfits(request):
                 try:
                     item = ClothingItem.objects.get(pk=item_id)
                     image_url = item.image_url or ""
-                    if image_url and not str(image_url).startswith("http"):
-                        image_url = f"{LIVE_BASE_URL}{image_url}"
+                    image_url = f"{LIVE_BASE_URL}/media/closet/{os.path.basename(image_url)}"
 
                     return {
                         "item_id": item.item_id,
@@ -340,7 +340,6 @@ User = get_user_model()
 
 
 @csrf_exempt
-@csrf_exempt
 def get_closet(request):
     if request.method != "GET":
         return JsonResponse({"error": "Only GET method allowed"}, status=405)
@@ -354,19 +353,14 @@ def get_closet(request):
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
-    # ✅ Hardcoded live Choreo base URL with correct prefix
-    BASE_URL = "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev/stylemate/app/v1.0"
-
     closet_entries = Closet.objects.filter(user=user)
     data = []
 
     for entry in closet_entries:
         item = entry.item
 
-        image_url = item.image_url
-        if image_url and not str(image_url).startswith("http"):
-            # 🔥 Fix: Insert full path including /stylemate/app/v1.0/
-            image_url = f"{BASE_URL}{image_url}"
+        image_url = item.image_url or ""
+        image_url = f"{LIVE_BASE_URL}/media/closet/{os.path.basename(image_url)}"
 
         data.append(
             {
