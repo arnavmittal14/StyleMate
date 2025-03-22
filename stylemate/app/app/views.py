@@ -118,7 +118,7 @@ def add_to_closet(request):
 
     if content_type.startswith("multipart/form-data"):
         data = request.POST
-        photo = request.FILES.get("photo")  # Get uploaded photo file
+        photo = request.FILES.get("photo")
     elif content_type.startswith("application/json"):
         try:
             data = json.loads(request.body)
@@ -128,98 +128,66 @@ def add_to_closet(request):
     else:
         return JsonResponse({"error": "Unsupported content type"}, status=400)
 
-    # Required fields
     item_name = data.get("item_name")
     user_id = data.get("user_id")
     if not item_name or not user_id:
-        return JsonResponse(
-            {"error": "Missing required fields: item_name and user_id"}, status=400
-        )
+        return JsonResponse({"error": "Missing required fields: item_name and user_id"}, status=400)
 
     description = data.get("description")
     category_id = data.get("category_id")
     color = data.get("color")
     brand = data.get("brand")
 
-    # Save Image if provided
-    # Default to None if no image is uploaded
     image_url = data.get("image_url", None)
 
     if photo:
         try:
-            # Validate file type
             if not photo.name.lower().endswith((".jpg", ".jpeg", ".png")):
-                return JsonResponse(
-                    {"error": "Unsupported file type. Only JPG and PNG are allowed."},
-                    status=400,
-                )
+                return JsonResponse({"error": "Unsupported file type. Only JPG and PNG are allowed."}, status=400)
 
-            # Open image
             input_image = Image.open(photo)
-
-            # Ensure image is in correct mode
             if input_image.mode != "RGB":
                 input_image = input_image.convert("RGB")
 
-            # Apply background removal
             output_image = input_image
-
-            # Convert to PNG bytes
             output_io = BytesIO()
             output_image.save(output_io, format="PNG")
             processed_bytes = output_io.getvalue()
 
-            # Generate unique filename
             filename = f"{item_name.replace(' ', '_').lower()}_{user_id}.png"
-            # Store under media/closet/
             file_path = os.path.join("closet", filename)
 
-            # Save the processed image
             with default_storage.open(file_path, "wb") as out_file:
                 out_file.write(processed_bytes)
 
-            image_url = f"/media/{file_path}"  # URL to access image
-
+            image_url = f"/media/{file_path}"
         except Exception as e:
-            return JsonResponse(
-                {"error": f"Error lsprocessing image: {str(e)}"}, status=400
-            )
+            return JsonResponse({"error": f"Error processing image: {str(e)}"}, status=400)
 
-    # Create ClothingItem instance
-    clothing_item, created = ClothingItem.objects.get_or_create(
-        item_name=item_name,
-        defaults={
-            "description": description,
-            "category_id": category_id,
-            "color": color,
-            "brand": brand,
-            "image_url": image_url,
-        },
-    )
-
-    if not created and image_url:
-        clothing_item.image_url = image_url  # Update image if item exists
-        clothing_item.save()
-
-    # Retrieve User
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
-    # Link ClothingItem to User's Closet
-    closet_entry, _ = Closet.objects.get_or_create(user=user, item=clothing_item)
-
-    return JsonResponse(
-        {
-            "message": "Clothing item added to closet",
-            "closet_id": closet_entry.closet_id,
-            "item_id": clothing_item.item_id,
-            "image_url": image_url,  # Return the image URL
-        },
-        status=201,
+    clothing_item = ClothingItem.objects.create(
+        item_name=item_name,
+        description=description,
+        category_id=category_id,
+        color=color,
+        brand=brand,
+        image_url=image_url,
     )
 
+    closet_entry = Closet.objects.create(user=user, item=clothing_item)
+
+    return JsonResponse({
+        "message": "Clothing item added to closet",
+        "closet_id": closet_entry.closet_id,
+        "item_id": clothing_item.item_id,
+        "image_url": image_url,
+    }, 
+    status=201
+    )
 
 @csrf_exempt
 def add_saved_outfit(request):
