@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { api } from "../../api"; // ✅ Axios instance
+import { liveApi } from "../../api"; // ✅ Switched to liveApi
 import FavoriteItem from "./FavoriteItem";
 import "./FavoritesPage.css";
 
@@ -16,7 +16,7 @@ const FavoritesPage = () => {
           return;
         }
 
-        const response = await api.get(`/api/get_saved_outfits/?user_id=${userId}`);
+        const response = await liveApi.get(`/api/get_saved_outfits/?user_id=${userId}`); // 🔄 updated to liveApi
 
         if (response.data.saved_outfits) {
           setFavoriteOutfits(response.data.saved_outfits);
