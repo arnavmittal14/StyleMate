@@ -61,9 +61,7 @@ def generate_outfit(request):
     for entry in user_closet_items:
         clothing_item = entry.item
         category_key = int(clothing_item.category_id)
-        image_url = clothing_item.image_url
-        if image_url and not str(image_url).startswith("http"):
-            image_url = f"{BASE_URL}{image_url}"
+        image_url = f"{BASE_URL}{clothing_item.image_url}" if clothing_item.image_url else None
 
         category_map[category_key].append({
             "item_id": clothing_item.item_id,
