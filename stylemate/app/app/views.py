@@ -320,19 +320,18 @@ def get_saved_outfits(request):
     for saved in saved_outfits:
         outfit = saved.outfit
 
-        # Fetch clothing items
         def get_clothing_item(item_id):
             if item_id:
                 try:
                     item = ClothingItem.objects.get(pk=item_id)
+                    image_url = item.image_url or ""
+                    if image_url and not str(image_url).startswith("http"):
+                        image_url = f"{LIVE_BASE_URL}{image_url}"
+
                     return {
                         "item_id": item.item_id,
                         "item_name": item.item_name,
-                        "image_url": (
-                            request.build_absolute_uri(item.image_url)
-                            if item.image_url
-                            else None
-                        ),
+                        "image_url": image_url,
                     }
                 except ClothingItem.DoesNotExist:
                     return None
@@ -352,7 +351,6 @@ def get_saved_outfits(request):
                 "Footwear": get_clothing_item(outfit.footwear_item_id),
             },
         }
-
         data.append(outfit_data)
 
     return JsonResponse({"saved_outfits": data}, status=200)
@@ -513,17 +511,18 @@ def upload_and_process_photo(request):
     )
 
 
+LIVE_BASE_URL = "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev/stylemate/app/v1.0"
+
 @csrf_exempt
 def current_user(request):
     if not request.user.is_authenticated:
         return JsonResponse({"error": "User not authenticated"}, status=401)
 
     user = request.user
-    # If the user has binary data for the profile photo, construct a URL to serve it.
     if hasattr(user, "profile_photo_url") and user.profile_photo_url:
-        photo_url = f"http://localhost:8000/api/profile_photo/{user.user_id}/"
+        photo_url = f"{LIVE_BASE_URL}/api/profile_photo/{user.user_id}/"
     else:
-        photo_url = "/profile.png"
+        photo_url = f"{LIVE_BASE_URL}/profile.png"
 
     data = {
         "user_id": user.user_id,
