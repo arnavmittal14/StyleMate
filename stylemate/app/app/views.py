@@ -12,6 +12,8 @@ from django.core.files.storage import FileSystemStorage, default_storage
 from django.http import Http404, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
+from django.conf import settings
+from django.utils._os import safe_join
 
 # Image processing imports
 from rembg import remove
