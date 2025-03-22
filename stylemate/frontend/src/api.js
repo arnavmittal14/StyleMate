@@ -9,7 +9,7 @@ const api = axios.create({
 // ✅ Choreo full endpoint (Production)
 const liveApi = axios.create({
   baseURL: "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev/stylemate/app/v1.0",
-  //withCredentials: true,
+  withCredentials: false,
 });
 
 console.log("Using API base:", api.defaults.baseURL);
