@@ -18,15 +18,12 @@ User = get_user_model()
 # Initialize Gemini API
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
-
 @api_view(["POST"])
-@csrf_exempt  # ✅ Disable CSRF protection (only for debugging)
-@permission_classes([AllowAny])  # ✅ Allow all users to access this API
+@csrf_exempt
+@permission_classes([AllowAny])
 def generate_outfit(request):
     print("🔹 Incoming Headers:", request.headers)
     print("🔹 Incoming Data:", request.data)
-
-    # Check if Django recognizes authentication
     print("🔹 Django Thinks User Is:", request.user)
 
     if request.user.is_authenticated:
@@ -43,46 +40,47 @@ def generate_outfit(request):
     if not user_id:
         return Response({"error": "User ID is required."}, status=400)
 
-    # Ensure user_id is an integer
     try:
         user_id = int(user_id)
     except ValueError:
         return Response({"error": "Invalid user_id. Must be an integer."}, status=400)
 
-    # Fetch user
     try:
         user = User.objects.get(user_id=user_id)
         print(f"🔹 Found User: {user.email}")
     except User.DoesNotExist:
         return Response({"error": "User not found."}, status=404)
 
-    # Fetch user's closet items
     user_closet_items = Closet.objects.filter(user_id=user.user_id).select_related("item")
     if not user_closet_items.exists():
         return Response({"error": "No clothing items found in your closet."}, status=400)
 
-    # Store category keys as **integers** for consistent lookup
+    BASE_URL = "https://26f6fa57-a5b6-4f2c-936e-3e0cb15a69ba-dev.e1-us-east-azure.choreoapis.dev/stylemate/app/v1.0"
+
     category_map = defaultdict(list)
     for entry in user_closet_items:
         clothing_item = entry.item
-        category_key = int(clothing_item.category_id)  # Ensure category key is an integer
+        category_key = int(clothing_item.category_id)
+        image_url = clothing_item.image_url
+        if image_url and not str(image_url).startswith("http"):
+            image_url = f"{BASE_URL}{image_url}"
+
         category_map[category_key].append({
             "item_id": clothing_item.item_id,
             "item_name": clothing_item.item_name,
-            "image_url": request.build_absolute_uri(clothing_item.image_url) if clothing_item.image_url else None,
+            "image_url": image_url,
         })
 
     formatted_clothing_options = {
-        1: category_map.get(1, []),  # Head Accessory
-        2: category_map.get(2, []),  # Top
-        3: category_map.get(3, []),  # Outerwear
-        4: category_map.get(4, []),  # Bottom
-        5: category_map.get(5, []),  # Footwear
+        1: category_map.get(1, []),
+        2: category_map.get(2, []),
+        3: category_map.get(3, []),
+        4: category_map.get(4, []),
+        5: category_map.get(5, []),
     }
 
     print(f"🔹 Available Clothing Choices for LLM: {json.dumps(formatted_clothing_options, indent=2)}")
 
-    # ✅ Ensure LLM only selects from available closet items
     prompt = f"""
     You are a personal stylist. The user has these clothing options:
 
@@ -116,20 +114,17 @@ def generate_outfit(request):
         raw_response = response.text
         print(f"🔹 Raw Response from LLM: {raw_response}")
 
-        # Extract JSON
         json_match = re.search(r"\{[\s\S]*\}", raw_response)
         if not json_match:
             return Response({"error": "LLM response is not JSON formatted."}, status=500)
 
         cleaned_response = json_match.group().strip()
         cleaned_response = re.sub(r"```(json)?", "", cleaned_response).strip()
-
         outfit_suggestion = json.loads(cleaned_response)
 
-        # ✅ Fix: Ensure correct integer category lookup
         final_outfit = {}
         for category, details in outfit_suggestion.items():
-            category = int(category)  # Convert key to integer for lookup
+            category = int(category)
             if not details or "item_id" not in details:
                 final_outfit[category] = {"item": "None", "image": None, "item_id": None}
                 continue
@@ -143,7 +138,7 @@ def generate_outfit(request):
             if matched_item:
                 final_outfit[category] = {
                     "item": matched_item["item_name"],
-                    "image": matched_item["image_url"],  # ✅ Ensure correct image path
+                    "image": matched_item["image_url"],
                     "item_id": matched_item["item_id"]
                 }
             else:
@@ -155,7 +150,6 @@ def generate_outfit(request):
         print(f"❌ Error: {e}")
         return Response({"error": f"LLM request failed: {str(e)}"}, status=500)
 
-    # ✅ Save suggestion in DB
     OutfitSuggestion.objects.create(suggestion=json.dumps(final_outfit))
 
     return Response({
