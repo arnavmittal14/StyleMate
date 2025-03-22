@@ -560,12 +560,20 @@ def serve_clothing_item(request, item_id):
     if not item.image_url:
         raise Http404("No image available")
 
-    # Convert to bytes in case it is a memoryview
-    image_data = bytes(item.image_url)
-    response = HttpResponse(image_data, content_type="image/png")
-    response["Content-Length"] = len(image_data)
-    return response
+    try:
+        # Convert relative path (e.g., /media/closet/xyz.png) to absolute path
+        relative_path = item.image_url.replace("/media/", "")
+        file_path = safe_join(settings.MEDIA_ROOT, relative_path)
 
+        with open(file_path, "rb") as f:
+            image_data = f.read()
+
+        response = HttpResponse(image_data, content_type="image/png")
+        response["Content-Length"] = len(image_data)
+        return response
+
+    except Exception as e:
+        raise Http404(f"Error reading image: {str(e)}")
 
 @csrf_exempt
 def update_user(request):
